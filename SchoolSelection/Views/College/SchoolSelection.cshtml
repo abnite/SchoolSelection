@@ -20,150 +20,187 @@
         getSchools = await _Context.Schools
             .Where(i => i.CollegeSelectionId == Guid.Parse(CollegeSelectionId))
             .ToListAsync();
-
         CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
     }
 }
+
 <section class="content">
-    <div class="container">
-        <!-- Header Section -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1 class="display-4 mt-4">School Selection</h1>
-                <p class="lead">Step 2 of 6: Define up to @remainingColleges schools to assess for your college selection.</p>
-                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
-                <hr class="my-4" style="width: 50%; margin: auto;">
-            </div>
-        </div>
+  <div class="wizard-wrapper">
 
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        
-                        <div> <h3 class="card-title text-center">Your Current Plan: @planType</h3></div>
-                        <div class="ml-auto">
-                            <button class="btn btn-outline-light btn-sm" type="button"
-                                    data-toggle="collapse" data-target="#planDetails"
-                                    aria-expanded="false" aria-controls="planDetails">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                    <div class="collapse" id="planDetails">
-                        <div class="card-body text-center">
-                            <div class="alert alert-warning">
-                                <h4 class="alert-heading">⚠ Important Notice</h4>
-                                <p>
-                                    Each school you add counts toward your selection limit. <strong>Once added, unless deleted.</strong>
-                                    Please ensure you carefully select the schools you wish to evaluate.
-                                </p>
-                                <p><strong>Remaining Schools You Can Add:</strong> <span class="text-danger">@remainingColleges</span></p>
-                                @if (remainingColleges == 0)
-                                {
-                                    <hr>
-                                    <p class="mb-0">
-                                        You have reached your limit. To add more schools, please
-                                        <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
-                                    </p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-
-        <!-- Add or Update School Section -->
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h3 class="card-title">Add or Update a School</h3>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-muted">You can add up to @remainingColleges more schools to evaluate. Click the Finished Entering Schools</p>
-                        
-                        <!-- Help Button -->
-                        <button type="button" class="btn btn-info mb-3" onclick="showHelp()">Help</button>
-                        
-                        <!-- Form -->
-                        <form asp-action="AddOrUpdateSchool" method="post">
-                            <input type="hidden" name="Id" value="@Model?.Id" />
-                            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId"/>
-                            <div class="form-group">
-                                <label for="schoolName">School Name</label>
-                                <input type="text" class="form-control form-control-lg mb-3" asp-for="Name" id="schoolName" placeholder="Enter school name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="schoolInfo">Additional Information</label>
-                                <textarea class="form-control mb-3" asp-for="Info" id="schoolInfo" rows="3" placeholder="Enter additional information"></textarea>
-                            </div>
-
-                            @{
-                                var buttonText = Model?.Id == null ? "Add School" : "Update School";
-                            }
-                            <div class="d-flex justify-content-between mt-2">
-                                <button type="submit" class="btn btn-success" @(remainingColleges == 0 ? "disabled" : "")>@buttonText</button>
-                                @if (getSchools.Count == 0)
-                                {
-                                    <span class="btn btn-primary disabled" aria-disabled="true">
-                                        Finished Entering Schools → Next Step
-                                    </span>
-                                }
-                                else
-                                {
-                                    <a asp-action="CriteriaSelection" class="btn btn-primary">
-                                        Finished Entering Schools → Next Step
-                                    </a>
-                                }
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Added Schools Section -->
-        <div class="row mt-5">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-success text-white text-center">
-                        <h3 class="card-title">Added Schools</h3>
-                    </div>
-                    <div class="card-body">
-                        @if (getSchools.Count == 0)
-                        {
-                            <p class="text-center text-muted">No schools have been added yet. Start by adding your first school above.</p>
-                        }
-                        else
-                        {
-                            <ul class="list-group">
-                                @foreach (var school in getSchools)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>@school.Name</strong><br />
-                                            <small class="text-muted">@school.Info</small>
-                                        </span>
-                                        <span>
-                                            <a asp-action="EditSchool" asp-route-id="@school.Id" class="btn btn-primary btn-sm">Edit</a>
-                                            <a asp-action="DeleteSchool" asp-route-id="@school.Id" class="btn btn-danger btn-sm">Delete</a>
-                                        </span>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- ── Wizard step indicator ─────────────────────────── -->
+    <div class="wizard-steps">
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Name</div>
+      </div>
+      <div class="wizard-step active">
+        <div class="wizard-step-circle">2</div>
+        <div class="wizard-step-label">Schools</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle">3</div>
+        <div class="wizard-step-label">Criteria</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle">4</div>
+        <div class="wizard-step-label">Evaluate</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle">5</div>
+        <div class="wizard-step-label">AI Result</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle"><i class="fas fa-flag" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Summary</div>
+      </div>
     </div>
-</section>
 
-<script>
-    function showHelp() {
-        alert("Add up to "+@remainingColleges+" schools to evaluate. Provide the name and any additional information you want.");
-    }
-</script>
+    <!-- ── Page heading ──────────────────────────────────── -->
+    <div class="page-heading">
+      <h1>Add Schools to Evaluate</h1>
+      <p class="lead">Step 2 of 6 &mdash; Add up to <strong>@remainingColleges</strong> school@(remainingColleges == 1 ? "" : "s") to assess.</p>
+      @if (!string.IsNullOrEmpty(CollegeSelectionName))
+      {
+        <p class="journey-name"><i class="fas fa-route mr-1"></i> @CollegeSelectionName</p>
+      }
+      <hr>
+    </div>
+
+    <!-- ── Plan banner ───────────────────────────────────── -->
+    <div style="max-width:680px;margin:1.25rem auto 0">
+      <div class="plan-banner">
+        <div>
+          <div class="plan-name"><i class="fas fa-tag mr-1" style="opacity:.8"></i> Plan: @planType</div>
+          <div class="plan-remaining">
+            @if (remainingColleges == 0)
+            {
+              <span style="color:#fde68a;font-weight:600">
+                ⚠ School limit reached &mdash;
+                <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" style="color:#fde68a;text-decoration:underline">upgrade</a>
+              </span>
+            }
+            else
+            {
+              <span>@remainingColleges school slot@(remainingColleges == 1 ? "" : "s") remaining</span>
+            }
+          </div>
+        </div>
+        <button class="btn btn-outline-light btn-sm" type="button"
+                data-toggle="collapse" data-target="#planDetails"
+                aria-expanded="false">
+          <i class="fas fa-info-circle mr-1"></i> Details
+        </button>
+      </div>
+      <div class="collapse collapse-section" id="planDetails">
+        <div style="padding:1rem 1.25rem">
+          <p style="margin:0;font-size:.875rem;color:var(--text-muted)">
+            Each school you add counts toward your plan limit. You can delete schools to free up slots.
+            Make sure to choose schools you genuinely want to evaluate.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Add / Update form ─────────────────────────────── -->
+    <div style="max-width:680px;margin:1.25rem auto 0">
+      <div class="card animate-in">
+        <div class="card-header bg-primary text-white">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <i class="fas fa-plus-circle mr-2" style="opacity:.8"></i>
+            @(Model?.Id == null ? "Add a School" : "Update School")
+          </h5>
+        </div>
+        <div class="card-body">
+          <form asp-action="AddOrUpdateSchool" method="post">
+            <input type="hidden" name="Id" value="@Model?.Id" />
+            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId" />
+
+            <div class="form-group mb-3">
+              <label for="schoolName"><i class="fas fa-university mr-1" style="color:var(--primary)"></i> School Name</label>
+              <input type="text" class="form-control form-control-lg"
+                     asp-for="Name" id="schoolName"
+                     placeholder="e.g., MIT, Stanford, Harvard" required>
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="schoolInfo"><i class="fas fa-sticky-note mr-1" style="color:var(--primary)"></i> Additional Notes</label>
+              <textarea class="form-control" asp-for="Info" id="schoolInfo" rows="3"
+                        placeholder="Location, programs of interest, any notes…"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <button type="submit"
+                      class="btn btn-success"
+                      @(remainingColleges == 0 ? "disabled" : "")>
+                <i class="fas fa-@(Model?.Id == null ? "plus" : "save") mr-1"></i>
+                @(Model?.Id == null ? "Add School" : "Update School")
+              </button>
+
+              @if (getSchools.Count == 0)
+              {
+                <span class="btn btn-primary disabled" style="opacity:.5;cursor:not-allowed">
+                  Next Step <i class="fas fa-arrow-right ml-1"></i>
+                </span>
+              }
+              else
+              {
+                <a asp-action="CriteriaSelection" class="btn btn-primary">
+                  Next Step <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+              }
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Added schools list ─────────────────────────────── -->
+    <div style="max-width:680px;margin:1.25rem auto 2rem">
+      <div class="card animate-in">
+        <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <i class="fas fa-list-ul mr-2" style="opacity:.8"></i> Added Schools
+          </h5>
+          <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:.2rem .75rem;font-size:.8rem;font-weight:700">
+            @getSchools.Count
+          </span>
+        </div>
+        <div class="card-body" style="padding:1rem!important">
+          @if (getSchools.Count == 0)
+          {
+            <div style="text-align:center;padding:2rem;color:var(--text-light)">
+              <i class="fas fa-school" style="font-size:2.5rem;opacity:.25;display:block;margin-bottom:.75rem"></i>
+              No schools added yet. Add your first school above.
+            </div>
+          }
+          else
+          {
+            <ul class="list-group list-group-flush" style="padding:0">
+              @foreach (var school in getSchools)
+              {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <div style="font-weight:700;color:var(--text)">@school.Name</div>
+                    @if (!string.IsNullOrEmpty(school.Info))
+                    {
+                      <small style="color:var(--text-muted)">@school.Info</small>
+                    }
+                  </div>
+                  <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:1rem">
+                    <a asp-action="EditSchool" asp-route-id="@school.Id" class="btn btn-primary btn-sm">
+                      <i class="fas fa-pen"></i>
+                    </a>
+                    <a asp-action="DeleteSchool" asp-route-id="@school.Id" class="btn btn-danger btn-sm">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -2,115 +2,126 @@
    var getUser = await _Context.Users.CountAsync();
  }
  <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-          with font-awesome or any other icon font library -->
-          @if (User.IsInRole("Admin"))
-          {
-            <li class="nav-item">
-              <a asp-action="Index" asp-controller="Dashboard" class="nav-link">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>
-                  Dashboard
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-            </li>
-          }
+ <nav class="mt-2">
+   <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-          <li class="nav-item">
-            <a  asp-action="Index" asp-controller="College" class="nav-link">
-              <i class="nav-icon fas fas fa-school"></i>
-              <p>
-                School Selection
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a  asp-action="ViewSelection" asp-controller="College" class="nav-link">
-              <i class="nav-icon fas fa-eye"></i>
-              <p>
-                View Selection
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-          </li>
-          
-          
-                    
-           
-          @if (User.IsInRole("Admin"))
-          {
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-cogs"></i>
-                <p>
-                  Setting
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview" style="margin-left: 10px; font-size: 14px">
-                <li class="nav-item">
-                  <a asp-action="Index" asp-controller="Account" class="nav-link">
-                    <i class="far fa-users-cog nav-icon"></i>
-                    <p>All Registered Users</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a asp-action="ActivityLog" asp-controller="Account" class="nav-link">
-                    <i class="far fa-users-cog nav-icon"></i>
-                    <p>Activity Logs </p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a asp-action="Index" asp-controller="Contact" class="nav-link">
-                    <i class="far fa-users-cog nav-icon"></i>
-                    <p>View Contact Inquiry</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a asp-action="Index" asp-controller="SubscriptionPlan" class="nav-link">
-                    <i class="far fa-users-cog nav-icon"></i>
-                    <p>Subscription Plan</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a asp-action="AddOrEdit" asp-controller="SubscriptionPlan" class="nav-link">
-                    <i class="far fa-users-cog nav-icon"></i>
-                    <p>Add or Edit plan</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-          }
-          <li class="nav-item">
-            <a asp-action="SubscriptionOptions" asp-controller="SubscriptionPlan" class="nav-link">
-              <i class="fa fa-key nav-icon"></i>
-              <p>Subscribe</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a asp-action="MySubscriptions" asp-controller="SubscriptionPlan" class="nav-link">
-              <i class="fa fa-key nav-icon"></i>
-              <p>My Subscription</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a asp-action="ChangePassword" asp-controller="Account" class="nav-link">
-              <i class="fa fa-key nav-icon"></i>
-              <p>Change Password</p>
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a asp-action="Logout" asp-controller="Account" class="nav-link">
-              <i class="far fa-circle nav-icon"></i>
-              <p>Logout</p>
-            </a>
-          </li>
-          
-           
-        </ul>
-      </nav>
-      <!-- /.sidebar-menu -->
+     @if (User.IsInRole("Admin"))
+     {
+       <li class="nav-item">
+         <a asp-action="Index" asp-controller="Dashboard" class="nav-link">
+           <i class="nav-icon fas fa-chart-line"></i>
+           <p>Dashboard</p>
+         </a>
+       </li>
+       <li style="margin:4px 8px 2px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(201,207,224,.4);padding:.25rem .4rem">
+         Admin
+       </li>
+     }
+
+     <li style="margin:4px 8px 2px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(201,207,224,.4);padding:.25rem .4rem">
+       Selection
+     </li>
+
+     <li class="nav-item">
+       <a asp-action="Index" asp-controller="College" class="nav-link">
+         <i class="nav-icon fas fa-home"></i>
+         <p>Home</p>
+       </a>
+     </li>
+
+     <li class="nav-item">
+       <a asp-action="CollegeSelectionName" asp-controller="College" class="nav-link">
+         <i class="nav-icon fas fa-plus-circle"></i>
+         <p>New Journey</p>
+       </a>
+     </li>
+
+     <li class="nav-item">
+       <a asp-action="ViewSelection" asp-controller="College" class="nav-link">
+         <i class="nav-icon fas fa-list-ul"></i>
+         <p>My Selections</p>
+       </a>
+     </li>
+
+     <li style="margin:8px 8px 2px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(201,207,224,.4);padding:.25rem .4rem">
+       Account
+     </li>
+
+     <li class="nav-item">
+       <a asp-action="SubscriptionOptions" asp-controller="SubscriptionPlan" class="nav-link">
+         <i class="nav-icon fas fa-crown"></i>
+         <p>Upgrade Plan</p>
+       </a>
+     </li>
+
+     <li class="nav-item">
+       <a asp-action="MySubscriptions" asp-controller="SubscriptionPlan" class="nav-link">
+         <i class="nav-icon fas fa-id-card"></i>
+         <p>My Subscription</p>
+       </a>
+     </li>
+
+     <li class="nav-item">
+       <a asp-action="ChangePassword" asp-controller="Account" class="nav-link">
+         <i class="nav-icon fas fa-lock"></i>
+         <p>Change Password</p>
+       </a>
+     </li>
+
+     @if (User.IsInRole("Admin"))
+     {
+       <li style="margin:8px 8px 2px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(201,207,224,.4);padding:.25rem .4rem">
+         Settings
+       </li>
+
+       <li class="nav-item">
+         <a href="#" class="nav-link">
+           <i class="nav-icon fas fa-cogs"></i>
+           <p>Admin Settings <i class="fas fa-angle-left right"></i></p>
+         </a>
+         <ul class="nav nav-treeview" style="margin-left:8px">
+           <li class="nav-item">
+             <a asp-action="Index" asp-controller="Account" class="nav-link">
+               <i class="nav-icon fas fa-users"></i>
+               <p>Registered Users</p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a asp-action="ActivityLog" asp-controller="Account" class="nav-link">
+               <i class="nav-icon fas fa-clipboard-list"></i>
+               <p>Activity Logs</p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a asp-action="Index" asp-controller="Contact" class="nav-link">
+               <i class="nav-icon fas fa-envelope"></i>
+               <p>Contact Inquiries</p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a asp-action="Index" asp-controller="SubscriptionPlan" class="nav-link">
+               <i class="nav-icon fas fa-tags"></i>
+               <p>Subscription Plans</p>
+             </a>
+           </li>
+           <li class="nav-item">
+             <a asp-action="AddOrEdit" asp-controller="SubscriptionPlan" class="nav-link">
+               <i class="nav-icon fas fa-edit"></i>
+               <p>Add/Edit Plan</p>
+             </a>
+           </li>
+         </ul>
+       </li>
+     }
+
+     <li style="margin:8px 8px 4px;border-top:1px solid rgba(255,255,255,.07)"></li>
+
+     <li class="nav-item">
+       <a asp-action="Logout" asp-controller="Account" class="nav-link" style="color:rgba(239,35,60,.8)!important">
+         <i class="nav-icon fas fa-sign-out-alt" style="color:rgba(239,35,60,.7)!important"></i>
+         <p>Logout</p>
+       </a>
+     </li>
+
+   </ul>
+ </nav>

@@ -2,18 +2,17 @@
 @model SchoolSelection.ViewModels.EvaluationViewModel
 
 @{
-    ViewData["Title"] = "College Evaluation - Step 4 of 6";
+    ViewData["Title"] = "Evaluate Colleges";
     Layout = "_BackendLayout";
-    
+
     var remainingSubmissions = ViewData["RemainingSubmissions"] as int? ?? 0;
     remainingSubmissions = remainingSubmissions < 0 ? 0 : remainingSubmissions;
     var planType = ViewData["PlanType"] as string;
-
     string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
     var CollegeSelectionName = "";
 
     var getCriteria = await _Context.Criteria.ToListAsync();
-    var getSchool = await _Context.Schools.ToListAsync();
+    var getSchool   = await _Context.Schools.ToListAsync();
     if (!string.IsNullOrEmpty(CollegeSelectionId))
     {
         var getCollegeSelection = await _Context.CollegeSelections
@@ -30,292 +29,301 @@
 }
 
 <section class="content">
-    <div class="container">
-        <!-- Header Section -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1 class="display-4 mt-4">Evaluate Colleges</h1>
-                <p class="lead">Step 4 of 6: Evaluate colleges using your predefined criteria.</p>
-                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
-                <hr class="my-4" style="width: 50%; margin: auto;">
-            </div>
-        </div>
+  <div class="wizard-wrapper">
 
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div><h3 class="card-title text-center">Your Current Plan: @planType</h3></div>
-                        <div class="ml-auto">
-                            <button class="btn btn-outline-light btn-sm" type="button"
-                                    data-toggle="collapse" data-target="#planDetails"
-                                    aria-expanded="false" aria-controls="planDetails">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                    <div class="collapse" id="planDetails">
-                        <div class="card-body text-center">
-                            <div class="alert alert-warning">
-                                <h4 class="alert-heading">⚠ Important Notice</h4>
-                                <p>
-                                    Submitting evaluations is limited based on your current plan.
-                                    <strong>Each time you click 'View Your College Fit', it counts towards your allowed submissions.</strong>
-                                </p>
-                                <p>
-                                    <strong>Once submitted, this action is irreversible.</strong> Ensure you have reviewed all your evaluations before proceeding.
-                                </p>
-                                <p><strong>Remaining Submissions:</strong> <span class="text-danger">@remainingSubmissions</span></p>
-
-                                @if (remainingSubmissions == 0)
-                                {
-                                    <hr>
-                                    <p class="mb-0">
-                                        You have reached your limit. To continue generating college fit results, please
-                                        <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
-                                    </p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-
-        <!-- Evaluation Form Section -->
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h3 class="card-title">Evaluate a College</h3>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-muted">Select a college and criteria to evaluate. Provide your satisfaction level and any additional notes.</p>
-                        <form asp-action="SubmitEvaluation" method="post">
-                            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId" />
-                            <div class="form-group">
-                                <label for="schoolDropdown">Select a College:</label>
-                                <select asp-for="SchoolId" class="form-control form-control-lg mb-3" id="schoolDropdown" required>
-                                    <option value="" disabled selected>Select a College</option>
-                                    @foreach (var school in getSchool)
-                                    {
-                                        <option value="@school.Id">@school.Name</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="criteriaDropdown">Select a Criteria:</label>
-                                <select asp-for="CriteriaId" class="form-control form-control-lg mb-3" id="criteriaDropdown" required>
-                                    <option value="" disabled selected>Select a Criteria</option>
-                                    @foreach (var criteria in getCriteria)
-                                    {
-                                        <option value="@criteria.Id">@criteria.Name</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Satisfaction Level:</label>
-                                <div class="form-check form-check-inline">
-                                    <label class="form-check-label mr-3">
-                                        <input asp-for="Satisfaction" type="radio" value="Very Dissatisfied" class="form-check-input"> Very Dissatisfied
-                                    </label>
-                                    <label class="form-check-label mr-3">
-                                        <input asp-for="Satisfaction" type="radio" value="Dissatisfied" class="form-check-input"> Dissatisfied
-                                    </label>
-                                    <label class="form-check-label mr-3">
-                                        <input asp-for="Satisfaction" type="radio" value="Unsure" class="form-check-input"> Unsure
-                                    </label>
-                                    <label class="form-check-label mr-3">
-                                        <input asp-for="Satisfaction" type="radio" value="Satisfied" class="form-check-input" checked> Satisfied
-                                    </label>
-                                    <label class="form-check-label">
-                                        <input asp-for="Satisfaction" type="radio" value="Very Satisfied" class="form-check-input"> Very Satisfied
-                                    </label>
-                                </div>
-                            </div>
-
-                            @if (Model.GeneratedSummaries != null && Model.GeneratedSummaries.Any())
-                            {
-                                <div class="mt-4">
-                                    <!-- Change button to trigger modal instead of collapse -->
-                                    <button class="btn btn-outline-info btn-sm mb-2" type="button"
-                                            data-toggle="modal" data-target="#insightsModal">
-                                        Show Insights for Selected College
-                                    </button>
-                                </div>
-                            }
-                            <div class="form-group">
-                                <label for="notesTextarea">Notes:</label>
-                                <textarea asp-for="Notes" class="form-control mb-3" id="notesTextarea" rows="3" placeholder="Enter any notes here"></textarea>
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <div>
-                                    <button class="btn btn-secondary" onclick="window.location.href='@Url.Action("CriteriaSelection", "College")'">Previous</button>
-                                    <button type="submit" class="btn btn-success">Submit</button>
-                                </div>
-                                <a class="btn btn-primary" onclick="confirmEvaluationSubmission()">View Your College Fit</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Submitted Evaluations Section -->
-        <div class="row mt-5">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-success text-white text-center">
-                        <h3 class="card-title">Submitted Evaluations</h3>
-                    </div>
-                    <div class="card-body">
-                        @if (Model.SchoolEvaluations == null || !Model.SchoolEvaluations.Any())
-                        {
-                            <p class="text-center text-muted">No evaluations have been submitted yet.</p>
-                        }
-                        else
-                        {
-                            <ul class="list-group">
-                                @foreach (var school in Model.SchoolEvaluations)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>@school.SchoolName</strong><br />
-                                            <small class="text-muted">@string.Join(", ", school.CompletedCriteria)</small>
-                                        </span>
-                                        <span class="badge @(school.IsComplete ? "badge-success" : "badge-warning")">
-                                            @(school.IsComplete ? "Completed" : "Not Completed")
-                                        </span>
-                                    </li>
-                                }
-                            </ul>
-                        }
-
-                       <!-- @if (Model.GeneratedSummaries != null && Model.GeneratedSummaries.Any())
-                        {
-                            <div class="mt-4">
-                                <button class="btn btn-outline-info btn-sm mb-2" type="button" data-toggle="collapse" data-target="#generatedSummaryCollapse">
-                                    Show Insights for Selected College
-                                </button>
-                                <div class="collapse" id="generatedSummaryCollapse">
-                                    <div class="card border-info">
-                                        <div class="card-header bg-info text-white">
-                                            <strong>Insights:</strong>
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach (var summary in Model.GeneratedSummaries)
-                                            {
-                                                <div class="mb-3">
-                                                    <strong>@summary.SchoolName - @summary.CriteriaName:</strong>
-                                                    <p class="mb-0">@Html.Raw(summary.Summary)</p>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }-->
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <!-- ── Wizard steps ──────────────────────────────────── -->
+    <div class="wizard-steps">
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Name</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Schools</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Criteria</div>
+      </div>
+      <div class="wizard-step active">
+        <div class="wizard-step-circle">4</div>
+        <div class="wizard-step-label">Evaluate</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle">5</div>
+        <div class="wizard-step-label">AI Result</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle"><i class="fas fa-flag" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Summary</div>
+      </div>
     </div>
 
-    <!-- Confirmation Modal -->
-    <div class="modal fade" id="evaluationConfirmModal" tabindex="-1" role="dialog" aria-labelledby="evaluationConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title text-dark" id="evaluationConfirmModalLabel">⚠ Confirm Submission</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        Clicking <strong>"View Your College Fit"</strong> will count as a submission towards your allowed limit.
-                        <strong>This action cannot be undone.</strong>
-                    </p>
-                    <p>
-                        Please review your evaluations before proceeding.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button id="confirmEvaluationBtn" class="btn btn-success">Yes, Proceed</button>
-                </div>
-            </div>
-        </div>
+    <!-- ── Heading ───────────────────────────────────────── -->
+    <div class="page-heading">
+      <h1>Evaluate Your Schools</h1>
+      <p class="lead">Step 4 of 6 &mdash; Rate each school against every criterion.</p>
+      @if (!string.IsNullOrEmpty(CollegeSelectionName))
+      {
+        <p class="journey-name"><i class="fas fa-route mr-1"></i> @CollegeSelectionName</p>
+      }
+      <hr>
     </div>
 
-    <!-- Modal for Insights -->
-    <div class="modal fade" id="insightsModal" tabindex="-1" role="dialog" aria-labelledby="insightsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title" id="insightsModalLabel">College Insights</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-                    @foreach (var summary in Model.GeneratedSummaries)
+    <!-- ── Plan banner ───────────────────────────────────── -->
+    <div style="max-width:720px;margin:1.25rem auto 0">
+      <div class="plan-banner">
+        <div>
+          <div class="plan-name"><i class="fas fa-tag mr-1" style="opacity:.8"></i> Plan: @planType</div>
+          <div class="plan-remaining">
+            @if (remainingSubmissions == 0)
+            {
+              <span style="color:#fde68a;font-weight:600">
+                ⚠ Submission limit reached &mdash;
+                <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" style="color:#fde68a;text-decoration:underline">upgrade</a>
+              </span>
+            }
+            else
+            {
+              <span>@remainingSubmissions AI submission@(remainingSubmissions == 1 ? "" : "s") remaining</span>
+            }
+          </div>
+        </div>
+        <button class="btn btn-outline-light btn-sm" type="button"
+                data-toggle="collapse" data-target="#planDetails" aria-expanded="false">
+          <i class="fas fa-info-circle mr-1"></i> Details
+        </button>
+      </div>
+      <div class="collapse collapse-section" id="planDetails">
+        <div style="padding:1rem 1.25rem">
+          <p style="margin:0;font-size:.875rem;color:var(--text-muted)">
+            Each time you click <strong>"View Your College Fit"</strong> it uses one AI submission from your plan.
+            This action is irreversible — make sure all your evaluations are complete before proceeding.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Evaluation form ───────────────────────────────── -->
+    <div style="max-width:720px;margin:1.25rem auto 0">
+      <div class="card animate-in">
+        <div class="card-header bg-primary text-white">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <i class="fas fa-star-half-alt mr-2" style="opacity:.8"></i> Rate a School
+          </h5>
+        </div>
+        <div class="card-body">
+          <form asp-action="SubmitEvaluation" method="post">
+            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId" />
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="schoolDropdown">
+                    <i class="fas fa-university mr-1" style="color:var(--primary)"></i> College
+                  </label>
+                  <select asp-for="SchoolId" class="form-control" id="schoolDropdown" required>
+                    <option value="" disabled selected>Select a college…</option>
+                    @foreach (var school in getSchool)
                     {
-                        <div class="mb-3 border-bottom pb-2">
-                            <h6 class="text-primary">@summary.SchoolName - @summary.CriteriaName</h6>
-                            <div class="pl-3">@Html.Raw(summary.Summary)</div>
-                        </div>
+                      <option value="@school.Id">@school.Name</option>
                     }
+                  </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="criteriaDropdown">
+                    <i class="fas fa-list-check mr-1" style="color:var(--primary)"></i> Criteria
+                  </label>
+                  <select asp-for="CriteriaId" class="form-control" id="criteriaDropdown" required>
+                    <option value="" disabled selected>Select a criterion…</option>
+                    @foreach (var c in getCriteria)
+                    {
+                      <option value="@c.Id">@c.Name</option>
+                    }
+                  </select>
                 </div>
+              </div>
             </div>
+
+            <div class="form-group mb-4">
+              <label>
+                <i class="fas fa-smile mr-1" style="color:var(--primary)"></i> Satisfaction Level
+              </label>
+              <div class="rating-group">
+                @foreach (var (level, idx) in new[] {
+                  "Very Dissatisfied", "Dissatisfied", "Unsure", "Satisfied", "Very Satisfied"
+                }.Select((l, i) => (l, i)))
+                {
+                  var isChecked = level == "Satisfied";
+                  var inputId   = $"sat_{idx}";
+                  <input type="radio" asp-for="Satisfaction" value="@level"
+                         class="rating-option" id="@inputId" @(isChecked ? "checked" : "")>
+                  <label class="rating-label" for="@inputId">@level</label>
+                }
+              </div>
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="notesTextarea">
+                <i class="fas fa-sticky-note mr-1" style="color:var(--primary)"></i> Notes
+              </label>
+              <textarea asp-for="Notes" class="form-control" id="notesTextarea" rows="3"
+                        placeholder="Any observations about this school and criterion…"></textarea>
+            </div>
+
+            @if (Model.GeneratedSummaries != null && Model.GeneratedSummaries.Any())
+            {
+              <div class="mb-4">
+                <button class="btn btn-info btn-sm" type="button"
+                        data-toggle="modal" data-target="#insightsModal">
+                  <i class="fas fa-lightbulb mr-1"></i> Show AI Insights
+                </button>
+              </div>
+            }
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div style="display:flex;gap:.5rem">
+                <button type="button" class="btn btn-secondary"
+                        onclick="window.location.href='@Url.Action("CriteriaSelection","College")'">
+                  <i class="fas fa-arrow-left mr-1"></i> Back
+                </button>
+                <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save mr-1"></i> Save Rating
+                </button>
+              </div>
+              <button type="button" class="btn btn-primary"
+                      onclick="confirmEvaluationSubmission()"
+                      @(remainingSubmissions == 0 ? "disabled" : "")>
+                <i class="fas fa-robot mr-1"></i> View College Fit
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
 
+    <!-- ── Submitted evaluations ─────────────────────────── -->
+    <div style="max-width:720px;margin:1.25rem auto 2rem">
+      <div class="card animate-in">
+        <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <i class="fas fa-clipboard-check mr-2" style="opacity:.8"></i> Submitted Evaluations
+          </h5>
+        </div>
+        <div class="card-body" style="padding:1rem!important">
+          @if (Model.SchoolEvaluations == null || !Model.SchoolEvaluations.Any())
+          {
+            <div style="text-align:center;padding:2rem;color:var(--text-light)">
+              <i class="fas fa-clipboard" style="font-size:2.5rem;opacity:.25;display:block;margin-bottom:.75rem"></i>
+              No evaluations saved yet. Use the form above to rate a school.
+            </div>
+          }
+          else
+          {
+            <ul class="list-group list-group-flush" style="padding:0">
+              @foreach (var school in Model.SchoolEvaluations)
+              {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <div style="font-weight:700;color:var(--text)">@school.SchoolName</div>
+                    <small style="color:var(--text-muted)">@string.Join(", ", school.CompletedCriteria)</small>
+                  </div>
+                  <span class="badge @(school.IsComplete ? "badge-success" : "badge-warning")">
+                    @(school.IsComplete ? "✓ Complete" : "In Progress")
+                  </span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Confirmation Modal ─────────────────────────────── -->
+  <div class="modal fade" id="evaluationConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title font-weight-bold text-dark">
+            <i class="fas fa-exclamation-triangle mr-2"></i> Confirm AI Submission
+          </h5>
+          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p>Clicking <strong>"View Your College Fit"</strong> will generate an AI recommendation and use one submission credit.</p>
+          <p class="mb-0"><strong>This action cannot be undone.</strong> Have you finished all your evaluations?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelBtn" data-dismiss="modal">Cancel</button>
+          <button id="confirmEvaluationBtn" class="btn btn-primary">
+            <i class="fas fa-robot mr-1"></i> Yes, Generate Fit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Insights Modal ────────────────────────────────── -->
+  @if (Model.GeneratedSummaries != null && Model.GeneratedSummaries.Any())
+  {
+    <div class="modal fade" id="insightsModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-info text-white">
+            <h5 class="modal-title font-weight-bold">
+              <i class="fas fa-lightbulb mr-2"></i> AI Insights
+            </h5>
+            <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+          </div>
+          <div class="modal-body" style="max-height:60vh;overflow-y:auto;padding:1.5rem">
+            @foreach (var summary in Model.GeneratedSummaries)
+            {
+              <div class="mb-4 pb-3" style="border-bottom:1px solid var(--border)">
+                <h6 style="color:var(--primary);font-weight:700">@summary.SchoolName &mdash; @summary.CriteriaName</h6>
+                <div class="ai-box">@Html.Raw(summary.Summary)</div>
+              </div>
+            }
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 
 </section>
 
-<script>
-    function showHelp() {
-        alert("Select a college and a criterion to evaluate. Provide your satisfaction level and any additional notes.");
-    }
-</script>
-
 @section Scripts
 {
-    <script>
-        let evaluationSubmitted = false;
+  <script>
+    let evaluationSubmitted = false;
 
-        function confirmEvaluationSubmission() {
-            if (!evaluationSubmitted) {
-                $('#evaluationConfirmModal').modal('show'); // Show the modal
-            }
+    function confirmEvaluationSubmission() {
+      if (!evaluationSubmitted) $('#evaluationConfirmModal').modal('show');
+    }
+
+    $(document).ready(function () {
+      $('#confirmEvaluationBtn').click(function () {
+        if (!evaluationSubmitted) {
+          evaluationSubmitted = true;
+          $(this).html('<i class="fas fa-spinner fa-spin mr-1"></i> Processing…').prop('disabled', true);
+          $('#evaluationConfirmModal').modal('hide');
+          setTimeout(() => {
+            window.location.href = "@Url.Action("ReviewEvaluations", "College")";
+          }, 500);
         }
+      });
 
-        $(document).ready(function () {
-            $("#confirmEvaluationBtn").click(function () {
-                if (!evaluationSubmitted) {
-                    evaluationSubmitted = true; // Prevent multiple clicks
-                    $(this).text("Processing...").prop("disabled", true); // Disable button
-                    $('#evaluationConfirmModal').modal('hide'); // Close modal
-                    setTimeout(function() {
-                        window.location.href = "@Url.Action("ReviewEvaluations", "College")"; // Redirect
-                    }, 500);
-                }
-            });
-
-            // Prevent cancel button from submitting anything
-            $(".btn-secondary, .close").click(function (event) {
-                event.preventDefault(); // Stops default behavior
-                event.stopPropagation(); // Stops bubbling up
-                $('#evaluationConfirmModal').modal('hide'); // Just close the modal
-            });
-        });
-    </script>
+      $('#cancelBtn, .close').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $('#evaluationConfirmModal').modal('hide');
+      });
+    });
+  </script>
 }
-
-

@@ -12,8 +12,10 @@
   <title>School Selection | @ViewData["Title"]</title>
 
   <link rel="icon" href="~/images/schoolselection.jpeg" type="image/png">
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Inter Font (modern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
   <!-- DataTables -->
@@ -25,112 +27,132 @@
   <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Date Range Picker CSS -->
   <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
-  <!-- Theme style -->
+  <!-- AdminLTE base -->
   <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
-
-  <style>
-    .page-item.active .page-link {
-      z-index: 3;
-      color: #fff;
-      background-color: #f10128;
-      border-color: #ff0000;
-    }
-
-    a {
-      color: #ff0000;
-      text-decoration: none;
-      background-color: transparent;
-    }
-  </style>
+  <!-- Custom modern styles (overrides) -->
+  <link rel="stylesheet" href="~/css/site.css">
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-fixed">
+
+<!-- Spinner overlay for page loads -->
+<div class="spinner-overlay" id="pageSpinner">
+  <div class="spinner-ring"></div>
+</div>
+
 <!-- Site wrapper -->
 <div class="wrapper">
-  <!-- Navbar -->
+
+  <!-- ── Navbar ─────────────────────────────────────────── -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
+    <!-- Left: toggle + breadcrumb links -->
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+          <i class="fas fa-bars"></i>
+        </a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a asp-action="Index" asp-controller="College" class="nav-link">Home</a>
+        <a asp-action="Index" asp-controller="College" class="nav-link">
+          <i class="fas fa-home me-1" style="margin-right:4px"></i> Home
+        </a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a asp-action="Contact" asp-controller="Contact" class="nav-link">Contact</a>
       </li>
     </ul>
 
-    <!-- Right navbar links -->
+    <!-- Right: user dropdown -->
     <ul class="navbar-nav ml-auto">
-      <!-- User Dropdown Menu -->
       <li class="nav-item dropdown">
         @if (SignInManager.IsSignedIn(User))
         {
           var user = await UserManager.GetUserAsync(User);
-          <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="fas fa-user-circle"></i> @user.FirstName @user.LastName
+          <a class="nav-link d-flex align-items-center gap-2" data-toggle="dropdown" href="#" style="gap:.5rem">
+            <span class="nav-user-avatar">
+              @(user.FirstName?.Substring(0,1).ToUpper())@(user.LastName?.Substring(0,1).ToUpper())
+            </span>
+            <span class="d-none d-md-inline" style="font-weight:600;font-size:.85rem">
+              @user.FirstName @user.LastName
+            </span>
+            <i class="fas fa-chevron-down" style="font-size:.65rem;opacity:.6"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <div class="dropdown-user-header">
+              <div class="nav-user-avatar nav-user-avatar--lg">
+                @(user.FirstName?.Substring(0,1).ToUpper())@(user.LastName?.Substring(0,1).ToUpper())
+              </div>
+              <div>
+                <div style="font-weight:700;font-size:.9rem">@user.FirstName @user.LastName</div>
+                <div style="font-size:.75rem;color:#9ca3af">@user.Email</div>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
             <a asp-controller="Account" asp-action="Profile" class="dropdown-item">
-              <i class="fas fa-user mr-2"></i> Profile
+              <i class="fas fa-user-circle mr-2"></i> My Profile
+            </a>
+            <a asp-action="ChangePassword" asp-controller="Account" class="dropdown-item">
+              <i class="fas fa-lock mr-2"></i> Change Password
             </a>
             <div class="dropdown-divider"></div>
-            <a asp-action="Logout" asp-controller="Account" class="dropdown-item dropdown-footer">Logout</a>
+            <a asp-action="Logout" asp-controller="Account" class="dropdown-item text-danger">
+              <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
           </div>
         }
       </li>
     </ul>
   </nav>
-  <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
+  <!-- ── Sidebar ─────────────────────────────────────────── -->
+  <aside class="main-sidebar elevation-0">
+    <!-- Brand -->
     <a href="#" class="brand-link">
-      <img src="~/images/schoolselection.jpeg" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
-      <span class="brand-text font-weight-light">.</span>
+      <img src="~/images/schoolselection.jpeg" alt="Logo" class="brand-image">
+      <span class="brand-text">SchoolSelect</span>
     </a>
 
-    <!-- Sidebar -->
     <div class="sidebar">
-      <!-- Sidebar user (optional) -->
+      <!-- User panel -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="~/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-        </div>
-        <div class="info">
-          @if (SignInManager.IsSignedIn(User))
-          {
-            var user = await UserManager.GetUserAsync(User);
+        @if (SignInManager.IsSignedIn(User))
+        {
+          var user = await UserManager.GetUserAsync(User);
+          <div class="image">
+            <span class="sidebar-avatar">
+              @(user.FirstName?.Substring(0,1).ToUpper())@(user.LastName?.Substring(0,1).ToUpper())
+            </span>
+          </div>
+          <div class="info">
             <a href="#" class="d-block">@user.FirstName @user.LastName</a>
-          }
-        </div>
+          </div>
+        }
       </div>
 
       <!-- Sidebar Menu -->
       @Html.Partial("_PageMenu")
-      <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
   </aside>
 
-  <!-- Content Wrapper. Contains page content -->
+  <!-- ── Content Wrapper ────────────────────────────────── -->
   <div class="content-wrapper">
     <section class="content-header">
       @{
         if (TempData["Message"] != null)
         {
-          <div class="alert alert-success alert-dismissible" id="DIVHide" style="margin:10px">
-            <button class="close" aria-hidden="true" type="button" data-dismiss="alert">×</button>
-            <center><i class="icon fa fa-check"></i> @TempData["Message"]</center>
+          <div class="alert alert-success alert-dismissible animate-in" id="DIVHide" style="margin:.75rem">
+            <button class="close" aria-hidden="true" type="button" data-dismiss="alert">
+              <i class="fas fa-times" style="font-size:.85rem"></i>
+            </button>
+            <i class="fas fa-check-circle mr-2"></i> @TempData["Message"]
           </div>
         }
         if (TempData["ErrorMessage"] != null)
         {
-          <div class="alert alert-danger alert-dismissible" id="DIVHide" style="margin:10px">
-            <button class="close" aria-hidden="true" type="button" data-dismiss="alert">×</button>
-            <center><i class="icon fa fa-check"></i> @TempData["ErrorMessage"]</center>
+          <div class="alert alert-danger alert-dismissible animate-in" id="DIVHide" style="margin:.75rem">
+            <button class="close" aria-hidden="true" type="button" data-dismiss="alert">
+              <i class="fas fa-times" style="font-size:.85rem"></i>
+            </button>
+            <i class="fas fa-exclamation-circle mr-2"></i> @TempData["ErrorMessage"]
           </div>
         }
       }
@@ -143,38 +165,28 @@
       <div class="modal-dialog">
         <div class="modal-content" id="globalModalContent">
           <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
-        <!-- /.modal-content -->
       </div>
-      <!-- /.modal-dialog -->
     </div>
   </div>
-  <!-- /.content-wrapper -->
 
+  <!-- ── Footer ─────────────────────────────────────────── -->
   <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
-      <b>Version</b> 2025.06.30
+      <span style="font-weight:600">v2025.06.30</span>
     </div>
-    <strong>Copyright &copy; @currentDate All rights reserved.</strong>
+    <strong>&copy; @currentDate SchoolSelection &mdash; All rights reserved.</strong>
   </footer>
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
+  <aside class="control-sidebar control-sidebar-dark"></aside>
 </div>
-<!-- ./wrapper -->
 
-<!-- jQuery -->
+<!-- ── Scripts ──────────────────────────────────────────── -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<!-- Bootstrap 4 -->
 <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- Select2 -->
 <script src="~/plugins/select2/js/select2.full.min.js"></script>
-<!-- DataTables -->
 <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -188,41 +200,54 @@
 <script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <script src="~/plugins/moment/moment.min.js"></script>
 <script src="~/plugins/daterangepicker/daterangepicker.js"></script>
-<!-- AdminLTE App -->
 <script src="~/dist/js/adminlte.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+  /* Inline extras that cannot go in external CSS (CSHTML-only) */
+  .nav-user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, #4361ee, #7b2ff7);
+    color: #fff; font-weight: 700; font-size: .78rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav-user-avatar--lg {
+    width: 44px; height: 44px; font-size: 1rem;
+  }
+  .sidebar-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #4361ee, #7b2ff7);
+    color: #fff; font-weight: 700; font-size: .8rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(255,255,255,.2);
+  }
+  .dropdown-user-header {
+    display: flex; align-items: center; gap: .875rem;
+    padding: .875rem 1rem;
+  }
+  .main-header .nav-link { gap: .4rem; }
+</style>
+
 <script>
   $(function () {
+    // DataTable with export buttons
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
     $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true
+      "paging": true, "lengthChange": false, "searching": false,
+      "ordering": true, "info": true, "autoWidth": false, "responsive": true
     });
-  });
 
-  $(document).ready(function () {
-    setTimeout(function () {
-      $('#DIVHide').fadeOut('slow');
-    }, 5000); // Hides after 5 seconds
-  });
+    // Auto-dismiss alerts
+    setTimeout(() => $('#DIVHide').fadeOut('slow'), 5000);
 
-  $(function () {
-    // Initialize Select2 Elements
+    // Select2 init
     $('.select2').select2();
-
-    // Initialize Select2 Elements with Bootstrap4 theme
-    $('.select2bs4').select2({
-      theme: 'bootstrap4'
-    });
+    $('.select2bs4').select2({ theme: 'bootstrap4' });
   });
 </script>
 

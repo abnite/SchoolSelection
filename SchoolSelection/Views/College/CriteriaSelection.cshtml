@@ -4,7 +4,6 @@
     ViewBag.Title = "Criteria Selection";
     Layout = "_BackendLayout";
 }
-
 @{
     var remainingCriteria = ViewData["RemainingCriteria"] as int? ?? 0;
     remainingCriteria = remainingCriteria < 0 ? 0 : remainingCriteria;
@@ -14,18 +13,9 @@
 
     var predefinedCriteria = new List<string>
     {
-        "Academic Reputation",
-        "Accessibility",
-        "Campus Culture",
-        "Campus Facilities",
-        "Cost of Attendance",
-        "Culinary Options",
-        "Demographics",
-        "Graduation Rate",
-        "Job Placement Rate",
-        "Location",
-        "Selectivity",
-        "Student-to-Faculty Ratio"
+        "Academic Reputation", "Accessibility", "Campus Culture", "Campus Facilities",
+        "Cost of Attendance", "Culinary Options", "Demographics", "Graduation Rate",
+        "Job Placement Rate", "Location", "Selectivity", "Student-to-Faculty Ratio"
     };
 
     var getCriteria = await _Context.Criteria
@@ -37,175 +27,217 @@
         var getCollegeSelection = await _Context.CollegeSelections
             .Where(i => i.Id == Guid.Parse(CollegeSelectionId))
             .FirstOrDefaultAsync();
-
         CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
     }
 }
 
 <section class="content">
-    <div class="container">
-        <!-- Header Section -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1 class="display-4 mt-4">Criteria Selection</h1>
-                <p class="lead">Step 3 of 6: Select predefined criteria or add your own, and assign their importance.</p>
-                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
-                <hr class="my-4" style="width: 50%; margin: auto;">
-            </div>
-        </div>
+  <div class="wizard-wrapper">
 
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div><h3 class="card-title text-center">Your Current Plan: @planType</h3></div>
-                        <div class="ml-auto">
-                            <button class="btn btn-outline-light btn-sm" type="button"
-                                    data-toggle="collapse" data-target="#planDetails"
-                                    aria-expanded="false" aria-controls="planDetails">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-                    <div class="collapse" id="planDetails">
-                        <div class="card-body text-center">
-                            <div class="alert alert-warning">
-                                <h4 class="alert-heading">⚠ Important Notice</h4>
-                                <p>
-                                    Each criteria you add counts toward your criteria limit.
-                                    Please ensure you carefully choose the criteria that matter most to your college selection process.
-                                </p>
-                                <p><strong>Remaining Criteria Entries:</strong> <span class="text-danger">@remainingCriteria</span></p>
-                                @if (remainingCriteria <= 0)
-                                {
-                                    <hr>
-                                    <p class="mb-0">
-                                        You have reached your limit. To continue adding criteria, please
-                                        <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
-                                    </p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-
-        <!-- Add or Update Criteria Section -->
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h3 class="card-title">Add Criteria</h3>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-muted">Select predefined criteria or add your own custom criteria. You can add up to @remainingCriteria more criteria.</p>
-                        <p class="text-muted">Criteria Added: <strong id="criteriaCounter">@getCriteria.Count</strong></p>
-                        <!-- Help Button -->
-                        <button type="button" class="btn btn-info mb-3" onclick="showHelp()">Help</button>
-
-                        <form asp-action="AddCriteria" method="post">
-                            <input type="hidden" name="Id" value="@Model?.Id" />
-                            <input type="hidden" name="CollegeSelectionId" value="@CollegeSelectionId" />
-
-                            <!-- Predefined Criteria Dropdown -->
-                            <div class="form-group">
-                                <label for="predefinedCriteria">Select Predefined Criteria:</label>
-                                <select id="predefinedCriteria" name="PredefinedCriteria" class="form-control">
-                                    <option value="" disabled selected>Select criteria...</option>
-                                    @foreach (var criteria in predefinedCriteria)
-                                    {
-                                        <option value="@criteria" selected="@(Model?.Name == criteria ? "selected" : null)">@criteria</option>
-                                    }
-                                </select>
-
-                            </div>
-
-                            <!-- Custom Criteria Input -->
-                            <div class="form-group">
-                                <label for="customCriteria">Or Add Custom Criteria:</label>
-                                <input type="text" id="customCriteria" name="CustomCriteria" class="form-control" value="@Model?.Name" placeholder="Enter custom criteria">
-                            </div>
-
-                            <!-- Importance Selection -->
-                            <div class="form-group">
-                                <label for="importance">Assign Importance:</label>
-                                <div id="importance" class="form-check">
-                                    @foreach (var level in new[] { "Low", "Slightly", "Neutral", "Very", "Extremely" })
-                                    {
-                                        <label class="form-check-label mr-3">
-                                            <input type="radio"
-                                                   name="Importance"
-                                                   value="@level"
-                                                   class="form-check-input"
-                                                   @(Model?.Importance == null && level == "Neutral" ? "checked" : Model?.Importance == level ? "checked" : "")>
-                                            @level
-                                        </label>
-                                    }
-                                </div>
-                            </div>
-
-
-                            <!-- Submit Button -->
-                            @{
-                                var buttonText = Model?.Id == null ? "Add Criteria" : "Update Criteria";
-                            }
-
-                            <div class="d-flex justify-content-between mt-4">
-                                <div>
-                                    <a asp-action="SchoolSelection" class="btn btn-secondary">Previous</a>
-                                    <button type="submit" class="btn btn-success ml-2">@buttonText</button>
-                                </div>
-                                <a asp-action="ReviewSelection" asp-route-collegeSelectionId="@CollegeSelectionId" class="btn btn-primary @(getCriteria.Count == 0 ? "disabled" : "")">
-                                    Finished Entering Criteria → Next Step
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Added Criteria Section -->
-        <div class="row mt-5">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-success text-white text-center">
-                        <h3 class="card-title">Added Criteria</h3>
-                    </div>
-                    <div class="card-body">
-                        @if (getCriteria.Count == 0)
-                        {
-                            <p class="text-center text-muted">No criteria have been added yet. Start by adding your first criteria above.</p>
-                        }
-                        else
-                        {
-                            <ul class="list-group">
-                                @foreach (var item in getCriteria)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>@item.Name</strong><br />
-                                            <small class="text-muted">Importance: @item.Importance</small>
-                                        </span>
-                                        <span>
-                                            <a asp-action="EditCriteria" asp-route-Id="@item.Id" class="btn btn-primary btn-sm">Edit</a>
-                                            <a asp-action="DeleteCriteria" asp-route-Id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
-                                        </span>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- ── Wizard step indicator ─────────────────────────── -->
+    <div class="wizard-steps">
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Name</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Schools</div>
+      </div>
+      <div class="wizard-step active">
+        <div class="wizard-step-circle">3</div>
+        <div class="wizard-step-label">Criteria</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle">4</div>
+        <div class="wizard-step-label">Evaluate</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle">5</div>
+        <div class="wizard-step-label">AI Result</div>
+      </div>
+      <div class="wizard-step">
+        <div class="wizard-step-circle"><i class="fas fa-flag" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Summary</div>
+      </div>
     </div>
-</section>
 
-<script>
-    function showHelp() {
-        alert("Define the criteria that are important for evaluating colleges i.e. Degree Program, Size, Diversity, Cost etc. Assign an importance level to each criterion.");
-    }
-</script>
+    <!-- ── Page heading ──────────────────────────────────── -->
+    <div class="page-heading">
+      <h1>Define Your Criteria</h1>
+      <p class="lead">Step 3 of 6 &mdash; Choose what matters most in your college decision.</p>
+      @if (!string.IsNullOrEmpty(CollegeSelectionName))
+      {
+        <p class="journey-name"><i class="fas fa-route mr-1"></i> @CollegeSelectionName</p>
+      }
+      <hr>
+    </div>
+
+    <!-- ── Plan banner ───────────────────────────────────── -->
+    <div style="max-width:680px;margin:1.25rem auto 0">
+      <div class="plan-banner">
+        <div>
+          <div class="plan-name"><i class="fas fa-tag mr-1" style="opacity:.8"></i> Plan: @planType</div>
+          <div class="plan-remaining">
+            @if (remainingCriteria <= 0)
+            {
+              <span style="color:#fde68a;font-weight:600">
+                ⚠ Criteria limit reached &mdash;
+                <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" style="color:#fde68a;text-decoration:underline">upgrade</a>
+              </span>
+            }
+            else
+            {
+              <span>@remainingCriteria criteria slot@(remainingCriteria == 1 ? "" : "s") remaining • Added: <strong>@getCriteria.Count</strong></span>
+            }
+          </div>
+        </div>
+        <button class="btn btn-outline-light btn-sm" type="button"
+                data-toggle="collapse" data-target="#planDetails"
+                aria-expanded="false">
+          <i class="fas fa-info-circle mr-1"></i> Details
+        </button>
+      </div>
+      <div class="collapse collapse-section" id="planDetails">
+        <div style="padding:1rem 1.25rem">
+          <p style="margin:0;font-size:.875rem;color:var(--text-muted)">
+            Each criterion you add counts toward your plan's criteria limit. Choose criteria that genuinely
+            influence your college choice — you can assign importance levels to weight them.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Add/Update Criteria form ──────────────────────── -->
+    <div style="max-width:680px;margin:1.25rem auto 0">
+      <div class="card animate-in">
+        <div class="card-header bg-primary text-white">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <i class="fas fa-sliders-h mr-2" style="opacity:.8"></i>
+            @(Model?.Id == null ? "Add Criteria" : "Update Criteria")
+          </h5>
+        </div>
+        <div class="card-body">
+          <form asp-action="AddCriteria" method="post">
+            <input type="hidden" name="Id" value="@Model?.Id" />
+            <input type="hidden" name="CollegeSelectionId" value="@CollegeSelectionId" />
+
+            <!-- Predefined -->
+            <div class="form-group mb-3">
+              <label for="predefinedCriteria">
+                <i class="fas fa-list-check mr-1" style="color:var(--primary)"></i> Choose Predefined Criteria
+              </label>
+              <select id="predefinedCriteria" name="PredefinedCriteria" class="form-control">
+                <option value="" disabled selected>Select from list…</option>
+                @foreach (var c in predefinedCriteria)
+                {
+                  <option value="@c" selected="@(Model?.Name == c ? "selected" : null)">@c</option>
+                }
+              </select>
+            </div>
+
+            <!-- Custom -->
+            <div class="form-group mb-4">
+              <label for="customCriteria">
+                <i class="fas fa-pen-to-square mr-1" style="color:var(--primary)"></i> Or Write Your Own
+              </label>
+              <input type="text" id="customCriteria" name="CustomCriteria"
+                     class="form-control" value="@Model?.Name"
+                     placeholder="e.g., Research Opportunities, Greek Life, Sports Programs">
+            </div>
+
+            <!-- Importance -->
+            <div class="form-group mb-4">
+              <label><i class="fas fa-weight-hanging mr-1" style="color:var(--primary)"></i> Importance Level</label>
+              <div class="rating-group">
+                @foreach (var level in new[] { "Low", "Slightly", "Neutral", "Very", "Extremely" })
+                {
+                  var isChecked = (Model?.Importance == null && level == "Neutral") || Model?.Importance == level;
+                  var inputId = $"importance_{level}";
+                  <input type="radio" name="Importance" value="@level" class="rating-option"
+                         id="@inputId" @(isChecked ? "checked" : "")>
+                  <label class="rating-label" for="@inputId">@level</label>
+                }
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div style="display:flex;gap:.5rem">
+                <a asp-action="SchoolSelection" class="btn btn-secondary">
+                  <i class="fas fa-arrow-left mr-1"></i> Back
+                </a>
+                <button type="submit" class="btn btn-success"
+                        @(remainingCriteria <= 0 ? "disabled" : "")>
+                  <i class="fas fa-@(Model?.Id == null ? "plus" : "save") mr-1"></i>
+                  @(Model?.Id == null ? "Add Criteria" : "Update Criteria")
+                </button>
+              </div>
+              <a asp-action="ReviewSelection"
+                 asp-route-collegeSelectionId="@CollegeSelectionId"
+                 class="btn btn-primary @(getCriteria.Count == 0 ? "disabled" : "")"
+                 @(getCriteria.Count == 0 ? "aria-disabled=true" : "")>
+                Next Step <i class="fas fa-arrow-right ml-1"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Added criteria list ────────────────────────────── -->
+    <div style="max-width:680px;margin:1.25rem auto 2rem">
+      <div class="card animate-in">
+        <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <i class="fas fa-list-ul mr-2" style="opacity:.8"></i> Added Criteria
+          </h5>
+          <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:.2rem .75rem;font-size:.8rem;font-weight:700">
+            @getCriteria.Count
+          </span>
+        </div>
+        <div class="card-body" style="padding:1rem!important">
+          @if (getCriteria.Count == 0)
+          {
+            <div style="text-align:center;padding:2rem;color:var(--text-light)">
+              <i class="fas fa-sliders-h" style="font-size:2.5rem;opacity:.25;display:block;margin-bottom:.75rem"></i>
+              No criteria added yet. Start by selecting or typing one above.
+            </div>
+          }
+          else
+          {
+            <ul class="list-group list-group-flush" style="padding:0">
+              @foreach (var item in getCriteria)
+              {
+                var importanceColor = item.Importance switch {
+                  "Extremely" => "#ef233c",
+                  "Very"      => "#ff9f1c",
+                  "Neutral"   => "#4cc9f0",
+                  "Slightly"  => "#06d6a0",
+                  _           => "#9ca3af"
+                };
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <div style="font-weight:700;color:var(--text)">@item.Name</div>
+                    <small>
+                      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:@importanceColor;margin-right:.3rem"></span>
+                      <span style="color:var(--text-muted)">@item.Importance importance</span>
+                    </small>
+                  </div>
+                  <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:1rem">
+                    <a asp-action="EditCriteria" asp-route-Id="@item.Id" class="btn btn-primary btn-sm">
+                      <i class="fas fa-pen"></i>
+                    </a>
+                    <a asp-action="DeleteCriteria" asp-route-Id="@item.Id" class="btn btn-danger btn-sm">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

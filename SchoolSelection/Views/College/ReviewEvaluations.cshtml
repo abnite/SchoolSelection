@@ -1,5 +1,5 @@
 @{
-    ViewBag.Title = "Review Evaluations - Final Summary";
+    ViewBag.Title = "Final Summary";
     Layout = "_BackendLayout";
 
     string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
@@ -15,58 +15,100 @@
 }
 
 <section class="content">
-    <div class="container">
-        <!-- Header Section -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1 class="display-4 mt-4">Review Evaluations</h1>
-                <p class="lead">Final Summary for your College Selection</p>
-                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
-                <hr class="my-4" style="width: 50%; margin: auto;">
-            </div>
-        </div>
+  <div class="wizard-wrapper">
 
-        <!-- Final Summary Section -->
-        <div class="row mt-4">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h3 class="card-title">Final Summary</h3>
-                    </div>
-                    <div class="card-body">
-                        @if (!string.IsNullOrEmpty(ViewBag.Summary?.ToString()))
-                        {
-                            <div class="summary-content p-3">
-                                @Html.Raw(ViewBag.Summary)
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="text-center text-muted">
-                                <p>No summary available at the moment. Please ensure you have completed all evaluations.</p>
-                            </div>
-                        }
-                        <div class="text-center mt-4">
-                            <a asp-action="CollegeEvaluation" class="btn btn-secondary btn-lg mr-2">
-                                Back to Evaluating Colleges
-                            </a>
-                            <a asp-action="Reset" class="btn btn-success btn-lg">
-                                Begin New College Selection
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- ── Wizard steps ──────────────────────────────────── -->
+    <div class="wizard-steps">
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Name</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Schools</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Criteria</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Evaluate</div>
+      </div>
+      <div class="wizard-step completed">
+        <div class="wizard-step-circle"><i class="fas fa-check" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">AI Result</div>
+      </div>
+      <div class="wizard-step active">
+        <div class="wizard-step-circle"><i class="fas fa-flag" style="font-size:.7rem"></i></div>
+        <div class="wizard-step-label">Summary</div>
+      </div>
     </div>
-</section>
 
-<style>
-    .summary-content {
-        font-size: 1.1rem;
-        line-height: 1.6;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-    }
-</style>
+    <!-- ── Heading ───────────────────────────────────────── -->
+    <div class="page-heading">
+      <h1>Your Selection Summary</h1>
+      <p class="lead">Final Step &mdash; Review your complete college evaluation results.</p>
+      @if (!string.IsNullOrEmpty(CollegeSelectionName))
+      {
+        <p class="journey-name"><i class="fas fa-route mr-1"></i> @CollegeSelectionName</p>
+      }
+      <hr>
+    </div>
+
+    <!-- ── Completion banner ──────────────────────────────── -->
+    <div style="max-width:720px;margin:1.5rem auto 0">
+      <div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:var(--r-lg);padding:1.25rem 1.5rem;border:1px solid rgba(6,214,160,.3);display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem" class="animate-in">
+        <div style="font-size:2.5rem;color:#059669">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div>
+          <div style="font-weight:800;font-size:1.1rem;color:#065f46">Journey Complete!</div>
+          <div style="font-size:.85rem;color:#047857;margin-top:.15rem">
+            Your college selection journey is complete. Below is your AI-generated fit summary.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Summary card ───────────────────────────────────── -->
+    <div style="max-width:720px;margin:0 auto 0">
+      <div class="card animate-in">
+        <div class="card-header bg-primary text-white">
+          <h5 style="margin:0;font-weight:700;font-size:.95rem">
+            <span style="font-size:1.1rem;margin-right:.35rem">✦</span> Final Evaluation Report
+          </h5>
+        </div>
+        <div class="card-body">
+          @if (!string.IsNullOrEmpty(ViewBag.Summary?.ToString()))
+          {
+            <div class="summary-content">
+              @Html.Raw(ViewBag.Summary)
+            </div>
+          }
+          else
+          {
+            <div style="text-align:center;padding:2.5rem;color:var(--text-light)">
+              <i class="fas fa-file-alt" style="font-size:3rem;opacity:.2;display:block;margin-bottom:.875rem"></i>
+              <p style="margin:0;font-size:.9rem">
+                No summary available. Please ensure you have completed all evaluations and generated a college fit report.
+              </p>
+            </div>
+          }
+
+          <div class="d-flex justify-content-center mt-4" style="gap:1rem;flex-wrap:wrap">
+            <a asp-action="CollegeEvaluation" class="btn btn-secondary btn-lg">
+              <i class="fas fa-arrow-left mr-2"></i> Back to Evaluations
+            </a>
+            <a asp-action="Reset" class="btn btn-primary btn-lg">
+              <i class="fas fa-plus-circle mr-2"></i> New College Search
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:2rem"></div>
+
+  </div>
+</section>

@@ -1,205 +1,220 @@
 @using SchoolSelection.Controllers
 
-
 @{
     ViewBag.Title = "Dashboard";
     Layout = "_BackendLayout";
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<section class="content" style="padding:1.5rem">
 
+  <!-- Page title -->
+  <div style="margin-bottom:1.5rem">
+    <h2 style="font-size:1.6rem;font-weight:800;letter-spacing:-.03em;color:var(--text);margin:0">
+      <i class="fas fa-chart-line mr-2" style="color:var(--primary)"></i>Analytics Dashboard
+    </h2>
+    <p style="color:var(--text-muted);font-size:.875rem;margin:.25rem 0 0">
+      Overview of platform activity and college selections.
+    </p>
+  </div>
+
+  <!-- ── Stat cards ─────────────────────────────────────── -->
+  <div class="row animate-in" style="margin-bottom:1.5rem">
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="stat-card blue">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
         </div>
-    </div>
-</div>
-
-
-<section class="content">
-
-    <div class="card">
-        <div class="card-body">
-            <div class="container-fluid">
-                <div class="row">
-                    <!-- Registered Users -->
-                    <div class="col-lg-4 col-6">
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <h3 id="totalUsers">0</h3>
-                                <p>Registered Users</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- College Selections -->
-                    <div class="col-lg-4 col-6">
-                        <div class="small-box bg-success">
-                            <div class="inner">
-                                <h3 id="totalCollegeSelections">0</h3>
-                                <p>College Selections</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-school"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Completed Selections -->
-                    <div class="col-lg-4 col-6">
-                        <div class="small-box bg-warning">
-                            <div class="inner">
-                                <h3 id="totalCompletedSelections">0</h3>
-                                <p>Completed Selections</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group">
-                            <label for="yearSelect">Select Year:</label>
-                            <select id="yearSelect" class="form-control" style="width: 200px;">
-                                @for (var year = DateTime.UtcNow.Year; year >= 2024; year--) // Adjust range as needed
-                                {
-                                    if (year == DateTime.UtcNow.Year)
-                                    {
-                                        <option value="@year" selected>@year</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@year">@year</option>
-                                    }
-                                    
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- Line Graph -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">College Selections Created for <span id="selectedYear">@DateTime.UtcNow.Year</span> (Monthly)</h3>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="selectionsChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div>
+          <div class="stat-value" id="totalUsers">—</div>
+          <div class="stat-label">Registered Users</div>
         </div>
+      </div>
     </div>
+    <div class="col-lg-4 col-md-6 mb-4 animate-in">
+      <div class="stat-card green">
+        <div class="stat-icon">
+          <i class="fas fa-school"></i>
+        </div>
+        <div>
+          <div class="stat-value" id="totalCollegeSelections">—</div>
+          <div class="stat-label">College Selections</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-4 animate-in">
+      <div class="stat-card orange">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div>
+          <div class="stat-value" id="totalCompletedSelections">—</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Chart card ─────────────────────────────────────── -->
+  <div class="card" style="border-radius:var(--r-lg)!important">
+    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between" style="flex-wrap:wrap;gap:.75rem">
+      <div>
+        <h5 style="margin:0;font-weight:700;font-size:1rem">
+          <i class="fas fa-chart-area mr-2" style="opacity:.8"></i>
+          Monthly College Selections — <span id="selectedYear">@DateTime.UtcNow.Year</span>
+        </h5>
+        <p style="margin:0;font-size:.75rem;opacity:.75;margin-top:.15rem">
+          Total selections created per month
+        </p>
+      </div>
+      <div class="d-flex align-items-center" style="gap:.5rem">
+        <label for="yearSelect" style="color:rgba(255,255,255,.8);font-size:.75rem;margin:0;text-transform:none;font-weight:500">
+          Filter year:
+        </label>
+        <select id="yearSelect" style="border:1.5px solid rgba(255,255,255,.35);border-radius:8px;padding:.3rem .75rem;background:rgba(255,255,255,.12);color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;min-width:90px">
+          @for (var year = DateTime.UtcNow.Year; year >= 2024; year--)
+          {
+            if (year == DateTime.UtcNow.Year)
+            {
+              <option value="@year" selected style="color:#000">@year</option>
+            }
+            else
+            {
+              <option value="@year" style="color:#000">@year</option>
+            }
+          }
+        </select>
+      </div>
+    </div>
+    <div class="card-body" style="padding:1.5rem!important">
+      <canvas id="selectionsChart" style="max-height:360px"></canvas>
+    </div>
+  </div>
 
 </section>
 
-
 @section Scripts
 {
-    <script>
-        $(document).ready(function () {
-            const yearSelect = $('#yearSelect');
-            const selectionsChartCanvas = document.getElementById('selectionsChart').getContext('2d');
-            let selectionsChart;
+  <script>
+    $(document).ready(function () {
+      const yearSelect = $('#yearSelect');
+      const ctx = document.getElementById('selectionsChart').getContext('2d');
+      let chart;
 
-            function fetchDashboardData(year) {
-                $.ajax({
-                    url: '@Url.Action("GetDashboardData")',
-                       // '/Dashboard/GetDashboardData', // Replace with your actual controller route
-                    type: 'GET',
-                    data: { year: year }, // Pass the selected year
-                    success: function (response) {
-                        if (!response.monthlyData || response.monthlyData.length === 0) {
-                            console.error('Monthly data is missing or empty.');
-                            return;
-                        }
+      // Gradient helper
+      function makeGradient(ctx, color1, color2) {
+        const g = ctx.createLinearGradient(0, 0, 0, 360);
+        g.addColorStop(0,   color1);
+        g.addColorStop(1,   color2);
+        return g;
+      }
 
-                        // Update Metrics
-                        $('#totalUsers').text(response.totalUsers);
-                        $('#totalCollegeSelections').text(response.totalCollegeSelections);
-                        $('#totalCompletedSelections').text(response.totalCompletedSelections);
+      function fetchDashboardData(year) {
+        $.ajax({
+          url: '@Url.Action("GetDashboardData")',
+          type: 'GET',
+          data: { year: year },
+          success: function (r) {
+            if (!r.monthlyData || !r.monthlyData.length) return;
 
-                        // Update Year in Title
-                        $('#selectedYear').text(year);
+            // Update counters with animation
+            animateCount('#totalUsers',               r.totalUsers);
+            animateCount('#totalCollegeSelections',   r.totalCollegeSelections);
+            animateCount('#totalCompletedSelections', r.totalCompletedSelections);
+            $('#selectedYear').text(year);
 
-                        // Prepare Data for Chart
-                        const labels = [
-                            'January', 'February', 'March', 'April', 'May', 'June',
-                            'July', 'August', 'September', 'October', 'November', 'December'
-                        ];
-                        const data = response.monthlyData.map(m => m.count || 0);
+            const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const data   = r.monthlyData.map(m => m.count || 0);
 
-                        // Update Chart
-                        if (selectionsChart) {
-                            selectionsChart.data.datasets[0].data = data;
-                            selectionsChart.data.labels = labels;
-                            selectionsChart.update();
-                        } else {
-                            selectionsChart = new Chart(selectionsChartCanvas, {
-                                type: 'line',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        label: 'Selections Created',
-                                        data: data,
-                                        borderColor: 'rgba(75, 192, 192, 1)',
-                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                        fill: true
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'top'
-                                        }
-                                    },
-                                    scales: {
-                                        x: {
-                                            title: {
-                                                display: true,
-                                                text: 'Months'
-                                            }
-                                        },
-                                        y: {
-                                            title: {
-                                                display: true,
-                                                text: 'Selections'
-                                            },
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
-                        }
+            if (chart) {
+              chart.data.datasets[0].data = data;
+              chart.data.labels = labels;
+              chart.update('active');
+            } else {
+              chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels,
+                  datasets: [{
+                    label: 'Selections Created',
+                    data,
+                    borderColor:     '#4361ee',
+                    backgroundColor: makeGradient(ctx, 'rgba(67,97,238,.3)', 'rgba(67,97,238,.02)'),
+                    fill:            true,
+                    tension:         0.45,
+                    pointBackgroundColor: '#4361ee',
+                    pointBorderColor:     '#fff',
+                    pointBorderWidth:     2,
+                    pointRadius:          5,
+                    pointHoverRadius:     7,
+                    borderWidth:          3
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  interaction: { mode: 'index', intersect: false },
+                  plugins: {
+                    legend: {
+                      display: true,
+                      position: 'top',
+                      labels: {
+                        font: { family: 'Inter', weight: '600', size: 12 },
+                        color: '#1a1f36',
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 20
+                      }
                     },
-                    error: function (xhr) {
-                        console.error('Error fetching dashboard data:', xhr.responseText);
+                    tooltip: {
+                      backgroundColor: '#1e1e2d',
+                      titleColor: '#fff',
+                      bodyColor: 'rgba(255,255,255,.8)',
+                      padding: 12,
+                      cornerRadius: 10,
+                      titleFont: { family: 'Inter', weight: '700' },
+                      bodyFont:  { family: 'Inter' }
                     }
-                });
+                  },
+                  scales: {
+                    x: {
+                      grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
+                      ticks: {
+                        font: { family: 'Inter', size: 12 },
+                        color: '#6b7280'
+                      }
+                    },
+                    y: {
+                      beginAtZero: true,
+                      grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
+                      ticks: {
+                        font: { family: 'Inter', size: 12 },
+                        color: '#6b7280',
+                        stepSize: 1
+                      }
+                    }
+                  }
+                }
+              });
             }
-
-            // Fetch data for the initially selected year
-            fetchDashboardData(yearSelect.val());
-
-            // Update data when the year changes
-            yearSelect.change(function () {
-                const selectedYear = $(this).val();
-                fetchDashboardData(selectedYear);
-            });
+          },
+          error: function (xhr) { console.error('Dashboard error:', xhr.responseText); }
         });
-    </script>
-}
+      }
 
+      // Count-up animation
+      function animateCount(selector, target) {
+        const el = $(selector);
+        const current = parseInt(el.text()) || 0;
+        $({ n: current }).animate({ n: target }, {
+          duration: 800,
+          easing: 'swing',
+          step: function () { el.text(Math.round(this.n)); },
+          complete: function () { el.text(target); }
+        });
+      }
+
+      fetchDashboardData(yearSelect.val());
+      yearSelect.on('change', function () { fetchDashboardData($(this).val()); });
+    });
+  </script>
+}
