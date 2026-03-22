@@ -152,16 +152,16 @@
                 <i class="fas fa-smile mr-1" style="color:var(--primary)"></i> Satisfaction Level
               </label>
               <div class="rating-group">
-                @foreach (var (level, idx) in new[] {
+                  @foreach (var (level, idx) in new[] {
                   "Very Dissatisfied", "Dissatisfied", "Unsure", "Satisfied", "Very Satisfied"
                 }.Select((l, i) => (l, i)))
-                {
-                  var isChecked = level == "Satisfied";
-                  var inputId   = $"sat_{idx}";
-                  <input type="radio" asp-for="Satisfaction" value="@level"
-                         class="rating-option" id="@inputId" @(isChecked ? "checked" : "")>
-                  <label class="rating-label" for="@inputId">@level</label>
-                }
+                  {
+                      var isChecked = level == "Satisfied";
+                      var inputId = $"sat_{idx}";
+                      <input type="radio" asp-for="Satisfaction" value="@level"
+                             class="rating-option" id="@inputId" checked="@(isChecked ? "checked" : null)">
+                      <label class="rating-label" for="@inputId">@level</label>
+                  }
               </div>
             </div>
 

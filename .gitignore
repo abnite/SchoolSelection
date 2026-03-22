@@ -4,3 +4,8 @@ obj/
 *.user
 *.suo
 *.log
+SchoolSelection/appsettings.Development.json
+SchoolSelection/appsettings.Local.json
+.env
+SchoolSelection/appsettings.json
+appsettings.json

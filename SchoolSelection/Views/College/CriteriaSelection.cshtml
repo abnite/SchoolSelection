@@ -175,8 +175,8 @@
               <a asp-action="ReviewSelection"
                  asp-route-collegeSelectionId="@CollegeSelectionId"
                  class="btn btn-primary @(getCriteria.Count == 0 ? "disabled" : "")"
-                 @(getCriteria.Count == 0 ? "aria-disabled=true" : "")>
-                Next Step <i class="fas fa-arrow-right ml-1"></i>
+                 aria-disabled="@(getCriteria.Count == 0 ? "true" : null)">
+                  Next Step <i class="fas fa-arrow-right ml-1"></i>
               </a>
             </div>
           </form>
