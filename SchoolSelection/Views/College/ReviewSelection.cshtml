@@ -1,0 +1,159 @@
+@model CollegeSelection
+@{
+    ViewBag.Title = "Review Selection";
+    Layout = "_BackendLayout";
+
+    Guid CollegeSelectionId = ViewBag.CollegeSelectionId;
+}
+
+<section class="content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Review Your Selection</h1>
+                <p class="lead">Step 4 of 6: Review your colleges and criteria before generating recommendations</p>
+                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@ViewBag.CollegeSelectionName</span></p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <div class="row mt-4 d-flex align-items-stretch"> <!-- Added align-items-stretch -->
+            <div class="col-lg-6 mb-4"> <!-- Added mb-4 for spacing -->
+                <div class="card shadow-lg h-100"> <!-- Added h-100 -->
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Selected Colleges</h3>
+                    </div>
+                    <div class="card-body d-flex flex-column"> <!-- Added flex classes -->
+                        @if (ViewBag.Colleges.Count == 0)
+                        {
+                            <p class="text-center text-muted my-auto">No colleges have been added yet.</p> <!-- Added my-auto -->
+                        }
+                        else
+                        {
+                            <div class="table-responsive"> <!-- Added table-responsive -->
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>College Name</th>
+                                        <!--<th>Location</th>-->
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var college in ViewBag.Colleges)
+                                    {
+                                        <tr>
+                                            <td>@college.Name</td>
+                                          
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">Total: @ViewBag.Colleges.Count colleges</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4"> <!-- Added mb-4 for spacing -->
+                <div class="card shadow-lg h-100"> <!-- Added h-100 -->
+                    <div class="card-header bg-success text-white text-center">
+                        <h3 class="card-title">Selected Criteria</h3>
+                    </div>
+                    <div class="card-body d-flex flex-column"> <!-- Added flex classes -->
+                        @if (ViewBag.Criteria.Count == 0)
+                        {
+                            <p class="text-center text-muted my-auto">No criteria have been added yet.</p> <!-- Added my-auto -->
+                        }
+                        else
+                        {
+                            <div class="table-responsive"> <!-- Added table-responsive -->
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Criterion</th>
+                                        <th>Importance</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var criteria in ViewBag.Criteria)
+                                    {
+                                        <tr>
+                                            <td>@criteria.Name</td>
+                                            <td>
+                                                <span class="badge 
+                                                        @(criteria.Importance == "Low" ? "bg-secondary" :
+                                                        criteria.Importance == "Slightly" ? "bg-info" :
+                                                        criteria.Importance == "Neutral" ? "bg-primary" :
+                                                        criteria.Importance == "Very" ? "bg-warning" : "bg-danger")">
+                                                    @criteria.Importance
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">Total: @ViewBag.Criteria.Count criteria</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <div class="d-grid gap-2"> <!-- Added for better button spacing -->
+                    <a type="button" id="CriteriaSelectionBtn" asp-action="CriteriaSelection" asp-route-CollegeSelectionId="@CollegeSelectionId" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Criteria
+                    </a>
+                    <!-- <a asp-action="GenerateRecommendation" asp-route-collegeSelectionId="@CollegeSelectionId" class="btn btn-primary btn-lg py-3">
+                        <i class="fas fa-magic me-2"></i>Generate Preliminary Recommendation
+                    </a>-->
+                    <form asp-action="GenerateRecommendation" asp-route-collegeSelectionId="@CollegeSelectionId" id="generateForm">
+                        <button type="submit" id="generateRecBtn" class="btn btn-primary btn-lg py-3">
+                            <i class="fas fa-magic me-2"></i>Generate Preliminary Recommendation
+                        </button>
+                    </form>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<style>
+    .card {
+        min-height: 400px; /* Set a minimum height for both cards */
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.getElementById('generateForm').addEventListener('submit', function(e) {
+            var btn = document.getElementById('generateRecBtn');
+            var btn2 = document.getElementById('CriteriaSelectionBtn');
+            // Disable immediately so it can't be clicked again
+            btn.disabled = true;
+            btn2.disabled = true;
+            
+            // Swap the icon and text to a spinner + "Processing"
+            btn.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
+                'Processing';
+            // Let the form submit continue
+        });
+    </script>
+}

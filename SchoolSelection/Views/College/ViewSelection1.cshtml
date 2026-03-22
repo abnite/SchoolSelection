@@ -1,0 +1,167 @@
+
+@{
+    ViewBag.Title = "Registered Users";
+    Layout = "_BackendLayout";
+    var userName = User.Identity.Name;
+    var getAllUsers = await _Context.Users.ToListAsync();
+    var getselection = await _Context.CollegeSelections.Include(i => i.AddedBy).Where(i => i.AddedBy.UserName == userName).OrderByDescending(i=>i.DateAdded).ToListAsync();
+    
+    @if (User.IsInRole("Admin"))
+    {
+        getselection = await _Context.CollegeSelections.Include(i => i.AddedBy).OrderByDescending(i=>i.DateAdded).ToListAsync();
+
+    }
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            
+        </div>
+    </div>
+</div>
+
+        <!-- Static Table End -->
+        <section class="content">
+    
+            <div class="card">
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th data-field="id">No</th>
+                            <th>College Selection Name</th>
+                            <th>Date</th>
+                            <th>User Name</th>
+                            <th>User Email</th>
+                            <th>Country</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @{
+                            var Counter = 1;
+                      
+                            foreach (var user in getselection)
+                            {
+                                var getResults = await _Context.SelectionResults.Where(I => I.CollegeSelectionId == user.Id).FirstOrDefaultAsync();
+                                <tr>
+                                                                         
+                                    <td>@Counter</td>
+                                    <td>@user.CollegeSelectionName</td>
+                                    <td>@user.DateAdded.Value.ToString("dd MMM, yyyy")</td>
+                                    @{
+                                        if (user.AddedBy == null)
+                                        {
+                                            <td>Null</td>
+                                            <td>Null</td>
+                                            <td>Null</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@user.AddedBy.FirstName @user.AddedBy.LastName</td>
+                                            <td>@user.AddedBy.Email</td>
+                                            <td>@user.AddedBy.Country</td>
+                                        }
+                                    }
+                                    @{
+                                        var status = "";
+                                        string badgeClass;
+                                        if (getResults != null)
+                                        {
+                                            status = "Completed";
+                                            badgeClass = "badge badge-success";
+                                        }
+                                        else
+                                        {
+                                            status = "Not Completed";
+                                            badgeClass = "badge badge-danger";
+                                        }
+                                        <td><span class="@badgeClass">@status</span></td>
+                                        <td>
+                                            @{
+                                                if (getResults != null)
+                                                {
+                                                    <button type="button" class="btn btn-success view-evaluation" data-toggle="modal" data-target="#evaluationModal" data-id="@getResults.Id" title="View">
+                                                        <i class="fa fa-check"> View Evaluation</i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                   <!-- <button type="button" class="btn btn-danger" title="Disable">
+                                                        <i class="fa fa-stop"> Continue</i>
+                                                    </button>-->
+                                                    <a asp-action="ResumeEvaluation" asp-controller="College" asp-route-collegeSelectionId="@user.Id" class="btn btn-primary" title="continue">Continue</a>
+                                                }
+                                            }
+                                        </td>
+                                    }
+                      
+                                </tr>
+                                Counter++;
+                            }
+                                                                  
+                        }
+                      
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+          
+        </section>
+        <div class="modal fade" id="evaluationModal" tabindex="-1" aria-labelledby="evaluationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="evaluationModalLabel">Evaluation Results</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="evaluationContent">
+                            <!-- Evaluation details will load here dynamically -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @section Scripts {
+            <script>
+        $(document).on('click', '.view-evaluation', function() {
+            var evaluationId = $(this).data('id');
+            
+            // Clear previous content
+            $('#evaluationContent').html('<p>Loading...</p>');
+
+            // Fetch evaluation details via AJAX
+            $.ajax({
+                url: '/College/GetEvaluationDetails', 
+                type: 'GET',
+                data: { id: evaluationId },
+                success: function(data) {
+                    $('#evaluationContent').html(data); // Load returned HTML into modal body
+                },
+                error: function (xhr) {
+                if (xhr.status === 401) {
+                    // Handle session expired or unauthorized error
+                    alert("Your session has expired. Please log in again.");
+                    window.location.href = '/Account/Login'; // Redirect to login page
+                } else if (xhr.status === 404) {
+                    // Handle evaluation not found
+                    $('#evaluationContent').html('<p>Evaluation not found.</p>');
+                } else {
+                    // Handle general errors
+                    $('#evaluationContent').html('<p>Error loading evaluation details.</p>');
+                }
+            }
+            });
+        });
+    </script>
+        }

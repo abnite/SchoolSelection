@@ -1,0 +1,266 @@
+@{
+    ViewBag.Title = "Contact Inquiries";
+    Layout = "_BackendLayout";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4">Contact Inquiries</h1>
+                <p class="lead text-muted">View, manage, and respond to customer inquiries efficiently.</p>
+                <hr style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <!-- Filter Options -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <select id="filterStatus" class="form-control form-control-lg">
+                    <option value="all">All</option>
+                    <option value="unread">Unread</option>
+                    <option value="read">Read</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table of Inquiries -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table id="inquiriesTable" class="table table-bordered table-hover">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Submitted At</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <nav id="paginationNav" aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <!-- Pagination links will be dynamically added -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for Viewing Inquiry Details -->
+<div class="modal fade" id="inquiryDetailsModal" tabindex="-1" aria-labelledby="inquiryDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="inquiryDetailsModalLabel">Inquiry Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="inquiryName"></span></p>
+                <p><strong>Email:</strong> <span id="inquiryEmail"></span></p>
+                <p><strong>Subject:</strong> <span id="inquirySubject"></span></p>
+                <p><strong>Submitted At:</strong> <span id="inquirySubmittedAt"></span></p>
+                <hr>
+                <p><strong>Message:</strong></p>
+                <p id="inquiryMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let currentPage = 1;
+            const itemsPerPage = 10;
+
+            // Function to load inquiries with pagination
+            function loadInquiries(status = 'all', page = 1) {
+                $.ajax({
+                    url: '@Url.Action("GetInquiries", "Contact")',
+                    type: 'GET',
+                    data: { status: status, page: page, itemsPerPage: itemsPerPage },
+                    success: function (response) {
+                        let tableBody = $('#inquiriesTable tbody');
+                        tableBody.empty();
+
+                        if (response.data.length === 0) {
+                            tableBody.append('<tr><td colspan="7" class="text-center">No inquiries found.</td></tr>');
+                        } else {
+                            $.each(response.data, function (index, inquiry) {
+                                tableBody.append(`
+                                <tr>
+                                    <td>${(page - 1) * itemsPerPage + index + 1}</td>
+                                    <td>${inquiry.name}</td>
+                                    <td>${inquiry.email}</td>
+                                    <td>${inquiry.subject}</td>
+                                    <td>${inquiry.submittedAt}</td>
+                                    <td><span class="badge ${getBadgeClass(inquiry.status)}">${inquiry.status}</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info view-details" data-id="${inquiry.id}">View Details</button>
+                                        <button class="btn btn-sm btn-primary mark-read" data-id="${inquiry.id}">Mark as Read</button>
+                                        <button class="btn btn-sm btn-success mark-resolved" data-id="${inquiry.id}">Mark as Resolved</button>
+                                    </td>
+                                </tr>
+                            `);
+                            });
+
+                            setupPagination(response.totalItems, page);
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while loading inquiries.');
+                    }
+                });
+            }
+
+            // Function to get badge class based on status
+            function getBadgeClass(status) {
+                if (status === 'Unread') return 'badge-danger';
+                if (status === 'Read') return 'badge-warning';
+                return 'badge-success';
+            }
+
+            // Function to setup pagination with ellipsis
+            function setupPagination(totalItems, currentPage) {
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                const maxVisiblePages = 6; // Number of visible pages before showing ellipses
+                const paginationNav = $('#paginationNav .pagination');
+                paginationNav.empty();
+
+                // Previous button
+                paginationNav.append(`
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+                </li>
+            `);
+
+                // Determine page range to display
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                // Add page numbers with ellipses
+                if (startPage > 1) {
+                    paginationNav.append(`<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`);
+                    if (startPage > 2) {
+                        paginationNav.append(`<li class="page-item disabled"><span class="page-link">...</span></li>`);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationNav.append(`
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        paginationNav.append(`<li class="page-item disabled"><span class="page-link">...</span></li>`);
+                    }
+                    paginationNav.append(`<li class="page-item"><a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>`);
+                }
+
+                // Next button
+                paginationNav.append(`
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                </li>
+            `);
+            }
+
+            // Handle pagination click
+            $(document).on('click', '.page-link', function (e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                if (!isNaN(page)) {
+                    currentPage = page;
+                    loadInquiries($('#filterStatus').val(), currentPage);
+                }
+            });
+
+            // Handle filter change
+            $('#filterStatus').change(function () {
+                currentPage = 1;
+                const status = $(this).val();
+                loadInquiries(status, currentPage);
+            });
+
+            // Initial load
+            loadInquiries();
+
+            // Other event handlers (view details, mark as read, mark as resolved)
+            $(document).on('click', '.view-details', function () {
+                const inquiryId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("GetInquiryDetails", "Contact")',
+                    type: 'GET',
+                    data: { id: inquiryId },
+                    success: function (response) {
+                        $('#inquiryName').text(response.name);
+                        $('#inquiryEmail').text(response.email);
+                        $('#inquirySubject').text(response.subject);
+                        $('#inquirySubmittedAt').text(response.submittedAt);
+                        $('#inquiryMessage').text(response.message);
+                        $('#inquiryDetailsModal').modal('show');
+                    },
+                    error: function () {
+                        alert('An error occurred while fetching the inquiry details.');
+                    }
+                });
+            });
+
+            $(document).on('click', '.mark-read', function () {
+                const inquiryId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("MarkAsRead", "Contact")',
+                    type: 'POST',
+                    data: { id: inquiryId },
+                    success: function () {
+                        loadInquiries($('#filterStatus').val(), currentPage);
+                    },
+                    error: function () {
+                        alert('An error occurred while marking the inquiry as read.');
+                    }
+                });
+            });
+
+            $(document).on('click', '.mark-resolved', function () {
+                const inquiryId = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("MarkAsResolved", "Contact")',
+                    type: 'POST',
+                    data: { id: inquiryId },
+                    success: function () {
+                        loadInquiries($('#filterStatus').val(), currentPage);
+                    },
+                    error: function () {
+                        alert('An error occurred while marking the inquiry as resolved.');
+                    }
+                });
+            });
+        });
+    </script>
+
+}

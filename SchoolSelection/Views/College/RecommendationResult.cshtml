@@ -1,0 +1,56 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SchoolSelection.ViewModels.ResultsViewModel
+@{
+    ViewBag.Title = "Recommendation Result";
+    Layout = "_BackendLayout";
+    
+    var recommendation = TempData["Recommendation"] as string;
+    var qw = ViewBag.Recommendation;
+    var ase = "ss";
+}
+
+<section class="content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Recommendation Result</h1>
+                <p class="lead">Step 5 of 6: Review your AI-generated recommendation</p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-info text-white text-center">
+                        <h3 class="card-title">Preliminary Recommendation</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success">
+                            @Html.Raw(TempData["Recommendation"])
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p>Would you like to proceed with detailed evaluation or finish now?</p>
+                            
+                            <div class="d-flex justify-content-center">
+                                <form method="post" asp-action="SaveRecommendationResults">
+                                    <input type="hidden" asp-for="CollegeSelectionId"/>
+                                    <input type="hidden" asp-for="Result" value="@recommendation"/>
+                                    <button type="submit" class="btn btn-success mr-3">  Finish Now</button>
+
+                                </form>
+                               <!-- <a asp-action="Index" class="btn btn-success mr-3">
+                                    Finish Now
+                                </a>-->
+                                <a asp-action="CollegeEvaluation" asp-route-collegeSelectionId="@Model.CollegeSelectionId" class="btn btn-primary">
+                                    Proceed to Detailed Evaluation
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

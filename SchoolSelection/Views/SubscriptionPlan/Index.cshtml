@@ -1,0 +1,53 @@
+@model IEnumerable<SubscriptionPlan>
+
+@{
+    ViewBag.Title = "Subscription Plans";
+    Layout = "_BackendLayout";
+}
+
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Subscription Plans</h3>
+            <div class="card-tools">
+                <a asp-action="AddOrEdit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Add New Plan
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Updated At</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var plan in Model)
+                {
+                    <tr>
+                        <td>@plan.Type</td>
+                        <td>$@plan.Price</td>
+                        <td>@plan.Description</td>
+                        <td>@plan.UpdatedAt.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <a asp-action="AddOrEdit" asp-route-id="@plan.Id" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@plan.Id" class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this plan?');">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+

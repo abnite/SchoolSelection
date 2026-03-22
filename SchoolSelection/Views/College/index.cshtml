@@ -1,0 +1,272 @@
+@model SchoolSelection.Models.CollegeSelection
+
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "_BackendLayout";
+
+    var dateYear = DateTime.Today.Year;
+    var remainingSelections = ViewData["RemainingSelections"] as int? ?? 0;
+    remainingSelections = remainingSelections < 0 ? 0 : remainingSelections;
+    var planType = ViewData["PlanType"] as string;
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Welcome Statement -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Welcome to Your College Selection Journey</h1>
+                <p class="lead">
+                    Welcome to your personal College Selection tool.  Your companion to help you navigate the complexities of choosing the right college fit.  You should have an initial list of colleges identified in order to begin.
+                </p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <!-- Plan Notice with View Details aligned right -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">Your Current Plan: @planType</h3>
+                        </div>
+                        <div class="ml-auto">
+                            <button class="btn btn-outline-light btn-sm" type="button"
+                                    data-toggle="collapse" data-target="#planDetails"
+                                    aria-expanded="false" aria-controls="planDetails">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="collapse" id="planDetails">
+                        <div class="card-body text-center">
+                            <div class="alert alert-warning mb-0">
+                                <h4 class="alert-heading">⚠ Important Notice</h4>
+                                <p>
+                                    Every college selection you create <strong>counts toward your plan limit</strong>.
+                                    <strong>Once used, it cannot be undone.</strong> Please ensure you are ready before proceeding.
+                                </p>
+                                <p><strong>Remaining Selections:</strong> <span class="text-danger">@remainingSelections</span></p>
+
+                                @if (remainingSelections == 0)
+                                {
+                                    <hr />
+                                    <p class="mb-0">
+                                        You have reached your limit. To continue, please
+                                        <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="mb-0">
+                                        Want more selections? <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">Upgrade your plan</a>.
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Recent Journeys Section -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="card-title mb-0">Your Recent College Journeys</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentJourneysContainer" class="row">
+                            <!-- Will be populated via AJAX -->
+                            <div class="col-12 text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <a href="@Url.Action("ViewSelection", "College")" class="btn btn-outline-info">View All Journeys</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started Video -->
+        <div id="videoSection" class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Getting Started</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <video id="collegeVideo" controls muted style="width: 100%; border-radius: 10px; height: 400px;">
+                            <source src="~/Video/CollegeSelection.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <p class="text-muted mt-3">Please watch this video before starting your college selection process.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Button -->
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <a href="@Url.Action("CollegeSelectionName", "College")" class="btn btn-success btn-lg px-5">Start Your Journey</a>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <p class="text-muted">Need help? Watch the video above or contact support for assistance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="evaluationModal" tabindex="-1" aria-labelledby="evaluationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="evaluationModalLabel">Evaluation Results</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="evaluationContent">
+                    <!-- Evaluation details will load here dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const videoWatched = localStorage.getItem("collegeVideoWatched");
+
+            if (videoWatched) {
+                const video = document.getElementById("collegeVideo");
+                if (video) {
+                    video.removeAttribute("autoplay"); // Ensure autoplay is off
+                    video.pause(); // Just in case it was cached to play
+                }
+            }
+
+            const video = document.getElementById("collegeVideo");
+            if (video) {
+                video.addEventListener("play", function () {
+                    localStorage.setItem("collegeVideoWatched", "true");
+                });
+            }
+        });
+    </script>
+
+    <script>
+    function loadRecentJourneys() {
+        $.ajax({
+            url: '/College/GetRecentJourneys',
+            type: 'GET',
+            success: function(data) {
+                const container = $('#recentJourneysContainer');
+                container.empty();
+
+                if (data.length > 0) {
+                    data.forEach(journey => {
+                        const journeyCard = `
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${journey.name}</h5>
+                                            <p class="card-text">
+                                                <small class="text-muted">Created: ${journey.date}</small>
+                                            </p>
+                                            ${journey.status === 'Completed' ?
+                                `<button class="btn btn-sm btn-outline-success view-evaluation" 
+                                                    data-toggle="modal" data-target="#evaluationModal" 
+                                                    data-id="${journey.id}">
+                                                    View Results
+                                                </button>` :
+                                `<a href="${journey.link}" class="btn btn-sm btn-outline-primary">
+                                                    Continue
+                                                </a>`
+                        }
+                                        </div>
+                                        <div class="card-footer">
+                                            <span class="badge ${journey.status === 'Completed' ? 'badge-success' : 'badge-warning'}">
+                                                ${journey.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        container.append(journeyCard);
+                    });
+                } else {
+                    container.html('<div class="col-12"><p class="text-center">You haven\'t started any college journeys yet.</p></div>');
+                }
+            },
+            error: function() {
+                $('#recentJourneysContainer').html('<div class="col-12"><p class="text-center text-danger">Error loading journeys.</p></div>');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        loadRecentJourneys();
+
+        // Modal handling
+        $('#evaluationModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var evaluationId = button.data('id');
+            var modal = $(this);
+
+            // Show loading state
+            modal.find('#evaluationContent').html(`
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading evaluation details...</p>
+                    </div>
+                `);
+
+            // Fetch evaluation details
+            $.ajax({
+                url: '/College/GetEvaluationDetails',
+                type: 'GET',
+                data: { id: evaluationId },
+                success: function(data) {
+                    modal.find('#evaluationContent').html(data);
+                },
+                error: function(xhr) {
+                    let msg = 'Error loading evaluation details.';
+                    if (xhr.status === 401) {
+                        msg = 'Session expired. Redirecting to login...';
+                        setTimeout(() => window.location.href = '/Account/Login', 1500);
+                    } else if (xhr.status === 404) {
+                        msg = 'Evaluation not found.';
+                    }
+                    modal.find('#evaluationContent').html(`<div class="alert alert-danger">${msg}</div>`);
+                }
+            });
+        });
+
+        // Clear modal content when closed
+        $('#evaluationModal').on('hidden.bs.modal', function() {
+            $(this).find('#evaluationContent').empty();
+        });
+    });
+    </script>
+}
+

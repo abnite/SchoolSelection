@@ -1,0 +1,321 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SchoolSelection.ViewModels.EvaluationViewModel
+
+@{
+    ViewData["Title"] = "College Evaluation - Step 4 of 6";
+    Layout = "_BackendLayout";
+    
+    var remainingSubmissions = ViewData["RemainingSubmissions"] as int? ?? 0;
+    remainingSubmissions = remainingSubmissions < 0 ? 0 : remainingSubmissions;
+    var planType = ViewData["PlanType"] as string;
+
+    string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
+    var CollegeSelectionName = "";
+
+    var getCriteria = await _Context.Criteria.ToListAsync();
+    var getSchool = await _Context.Schools.ToListAsync();
+    if (!string.IsNullOrEmpty(CollegeSelectionId))
+    {
+        var getCollegeSelection = await _Context.CollegeSelections
+            .Where(i => i.Id == Guid.Parse(CollegeSelectionId))
+            .FirstOrDefaultAsync();
+        getCriteria = await _Context.Criteria
+            .Where(i => i.CollegeSelectionId == Guid.Parse(CollegeSelectionId))
+            .ToListAsync();
+        getSchool = await _Context.Schools
+            .Where(i => i.CollegeSelectionId == Guid.Parse(CollegeSelectionId))
+            .ToListAsync();
+        CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
+    }
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Evaluate Colleges</h1>
+                <p class="lead">Step 4 of 6: Evaluate colleges using your predefined criteria.</p>
+                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div><h3 class="card-title text-center">Your Current Plan: @planType</h3></div>
+                        <div class="ml-auto">
+                            <button class="btn btn-outline-light btn-sm" type="button"
+                                    data-toggle="collapse" data-target="#planDetails"
+                                    aria-expanded="false" aria-controls="planDetails">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                    <div class="collapse" id="planDetails">
+                        <div class="card-body text-center">
+                            <div class="alert alert-warning">
+                                <h4 class="alert-heading">⚠ Important Notice</h4>
+                                <p>
+                                    Submitting evaluations is limited based on your current plan.
+                                    <strong>Each time you click 'View Your College Fit', it counts towards your allowed submissions.</strong>
+                                </p>
+                                <p>
+                                    <strong>Once submitted, this action is irreversible.</strong> Ensure you have reviewed all your evaluations before proceeding.
+                                </p>
+                                <p><strong>Remaining Submissions:</strong> <span class="text-danger">@remainingSubmissions</span></p>
+
+                                @if (remainingSubmissions == 0)
+                                {
+                                    <hr>
+                                    <p class="mb-0">
+                                        You have reached your limit. To continue generating college fit results, please
+                                        <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluation Form Section -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Evaluate a College</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Select a college and criteria to evaluate. Provide your satisfaction level and any additional notes.</p>
+                        <form asp-action="SubmitEvaluation" method="post">
+                            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId" />
+                            <div class="form-group">
+                                <label for="schoolDropdown">Select a College:</label>
+                                <select asp-for="SchoolId" class="form-control form-control-lg mb-3" id="schoolDropdown" required>
+                                    <option value="" disabled selected>Select a College</option>
+                                    @foreach (var school in getSchool)
+                                    {
+                                        <option value="@school.Id">@school.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="criteriaDropdown">Select a Criteria:</label>
+                                <select asp-for="CriteriaId" class="form-control form-control-lg mb-3" id="criteriaDropdown" required>
+                                    <option value="" disabled selected>Select a Criteria</option>
+                                    @foreach (var criteria in getCriteria)
+                                    {
+                                        <option value="@criteria.Id">@criteria.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Satisfaction Level:</label>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Satisfaction" type="radio" value="Very Dissatisfied" class="form-check-input"> Very Dissatisfied
+                                    </label>
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Satisfaction" type="radio" value="Dissatisfied" class="form-check-input"> Dissatisfied
+                                    </label>
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Satisfaction" type="radio" value="Unsure" class="form-check-input"> Unsure
+                                    </label>
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Satisfaction" type="radio" value="Satisfied" class="form-check-input" checked> Satisfied
+                                    </label>
+                                    <label class="form-check-label">
+                                        <input asp-for="Satisfaction" type="radio" value="Very Satisfied" class="form-check-input"> Very Satisfied
+                                    </label>
+                                </div>
+                            </div>
+
+                            @if (Model.GeneratedSummaries != null && Model.GeneratedSummaries.Any())
+                            {
+                                <div class="mt-4">
+                                    <!-- Change button to trigger modal instead of collapse -->
+                                    <button class="btn btn-outline-info btn-sm mb-2" type="button"
+                                            data-toggle="modal" data-target="#insightsModal">
+                                        Show Insights for Selected College
+                                    </button>
+                                </div>
+                            }
+                            <div class="form-group">
+                                <label for="notesTextarea">Notes:</label>
+                                <textarea asp-for="Notes" class="form-control mb-3" id="notesTextarea" rows="3" placeholder="Enter any notes here"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <div>
+                                    <button class="btn btn-secondary" onclick="window.location.href='@Url.Action("CriteriaSelection", "College")'">Previous</button>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                                <a class="btn btn-primary" onclick="confirmEvaluationSubmission()">View Your College Fit</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submitted Evaluations Section -->
+        <div class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3 class="card-title">Submitted Evaluations</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.SchoolEvaluations == null || !Model.SchoolEvaluations.Any())
+                        {
+                            <p class="text-center text-muted">No evaluations have been submitted yet.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-group">
+                                @foreach (var school in Model.SchoolEvaluations)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong>@school.SchoolName</strong><br />
+                                            <small class="text-muted">@string.Join(", ", school.CompletedCriteria)</small>
+                                        </span>
+                                        <span class="badge @(school.IsComplete ? "badge-success" : "badge-warning")">
+                                            @(school.IsComplete ? "Completed" : "Not Completed")
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                       <!-- @if (Model.GeneratedSummaries != null && Model.GeneratedSummaries.Any())
+                        {
+                            <div class="mt-4">
+                                <button class="btn btn-outline-info btn-sm mb-2" type="button" data-toggle="collapse" data-target="#generatedSummaryCollapse">
+                                    Show Insights for Selected College
+                                </button>
+                                <div class="collapse" id="generatedSummaryCollapse">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <strong>Insights:</strong>
+                                        </div>
+                                        <div class="card-body">
+                                            @foreach (var summary in Model.GeneratedSummaries)
+                                            {
+                                                <div class="mb-3">
+                                                    <strong>@summary.SchoolName - @summary.CriteriaName:</strong>
+                                                    <p class="mb-0">@Html.Raw(summary.Summary)</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="evaluationConfirmModal" tabindex="-1" role="dialog" aria-labelledby="evaluationConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title text-dark" id="evaluationConfirmModalLabel">⚠ Confirm Submission</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Clicking <strong>"View Your College Fit"</strong> will count as a submission towards your allowed limit.
+                        <strong>This action cannot be undone.</strong>
+                    </p>
+                    <p>
+                        Please review your evaluations before proceeding.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button id="confirmEvaluationBtn" class="btn btn-success">Yes, Proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Insights -->
+    <div class="modal fade" id="insightsModal" tabindex="-1" role="dialog" aria-labelledby="insightsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="insightsModalLabel">College Insights</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                    @foreach (var summary in Model.GeneratedSummaries)
+                    {
+                        <div class="mb-3 border-bottom pb-2">
+                            <h6 class="text-primary">@summary.SchoolName - @summary.CriteriaName</h6>
+                            <div class="pl-3">@Html.Raw(summary.Summary)</div>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+<script>
+    function showHelp() {
+        alert("Select a college and a criterion to evaluate. Provide your satisfaction level and any additional notes.");
+    }
+</script>
+
+@section Scripts
+{
+    <script>
+        let evaluationSubmitted = false;
+
+        function confirmEvaluationSubmission() {
+            if (!evaluationSubmitted) {
+                $('#evaluationConfirmModal').modal('show'); // Show the modal
+            }
+        }
+
+        $(document).ready(function () {
+            $("#confirmEvaluationBtn").click(function () {
+                if (!evaluationSubmitted) {
+                    evaluationSubmitted = true; // Prevent multiple clicks
+                    $(this).text("Processing...").prop("disabled", true); // Disable button
+                    $('#evaluationConfirmModal').modal('hide'); // Close modal
+                    setTimeout(function() {
+                        window.location.href = "@Url.Action("ReviewEvaluations", "College")"; // Redirect
+                    }, 500);
+                }
+            });
+
+            // Prevent cancel button from submitting anything
+            $(".btn-secondary, .close").click(function (event) {
+                event.preventDefault(); // Stops default behavior
+                event.stopPropagation(); // Stops bubbling up
+                $('#evaluationConfirmModal').modal('hide'); // Just close the modal
+            });
+        });
+    </script>
+}
+
+

@@ -1,0 +1,59 @@
+@model LoginViewModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "_LoginLayout";
+}
+
+<div class="col-md-6">
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="text-center mb-3">
+                <img src="~/images/schoolselection.jpeg" alt="Login Image" class="img-fluid" style="max-width: 100px;"> <!-- Adjust path and styling as needed -->
+            </div>
+                        
+            <h3 class="card-title text-center">User Login</h3>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+					
+            <form asp-action="Login" role="form" method="post" enctype="multipart/form-data" asp-controller="Account" eval="CloseForm(data,$ajaxTarget,XHR)">
+                <div class="form-group col-ld-6">
+                    <label class="label label-primary"  for="username">Email Address</label>
+                    <input type="text" asp-for="Email" placeholder="example@gmail.com" title="Please enter you username" required="required" class="form-control">
+                    <span asp-validation-for="Email" class="label label-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="label label-primary" for="password">Password</label>
+                    <input type="password"  asp-for="Password" title="Please enter your password" placeholder="******" required="required"  id="password" class="form-control">
+                    <span asp-validation-for="Password" class="label label-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input  type="checkbox" class="i-checks"> Remember me 
+                    </label>
+                </div>
+        
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success  btn-lg  login btn">Login</button>
+                </div>
+        
+            </form>
+            @*   <div class="row">
+        <a href="/Account/GoogleLogin" class="btn btn-danger">Login with Google</a>
+    </div>*@
+    
+           @* <form asp-action="GoogleLogin" role="form" method="post" enctype="multipart/form-data" asp-controller="Account" eval="CloseForm(data,$ajaxTarget,XHR)">
+                <div class="col-md-12" style="margin-top: 10px">
+                    <button type="submit" class="btn btn-danger  btn-lg  login btn"><span class="fa fa-google"> Sign in with Google</span> </button>
+                </div>
+            </form>*@
+            <div class="col-md-12" style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <a asp-action="passwordRecovery" title="Click To Reset password" style="color: #0b5ed7" asp-controller="Account">Forgotten Password?</a>
+                <a title="Click To Register" style="color: #0b5ed7" asp-controller="Account" asp-action="Register">Register</a>
+            </div>
+    
+    
+        </div>
+    </div>
+</div>

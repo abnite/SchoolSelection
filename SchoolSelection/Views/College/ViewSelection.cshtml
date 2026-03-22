@@ -1,0 +1,159 @@
+
+@{
+    ViewBag.Title = "View Selections";
+    Layout = "_BackendLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            
+        </div>
+    </div>
+</div>
+
+        <!-- Static Table End -->
+        <section class="content">
+    
+            <div class="card">
+                <div class="card-body">
+                    <table id="collegeTable" class="display table table-bordered table-striped" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>My Journey Name</th>
+                            <th>Date</th>
+                            <th>User Name</th>
+                            <th>User Email</th>
+                            <th>Country</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Data will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          
+        </section>
+        <div class="modal fade" id="evaluationModal" tabindex="-1" aria-labelledby="evaluationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="evaluationModalLabel">Evaluation Results</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="evaluationContent">
+                            <!-- Evaluation details will load here dynamically -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @section Scripts {
+            <script>
+                $(document).ready(function () {
+                    $('#collegeTable').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '/College/GetPaginatedCollegeSelections',
+                            type: 'GET',
+                            data: function (d) {
+                                // Add additional parameters if needed
+                                d.searchValue = d.search.value;
+                            }
+                        },
+                        columns: [
+                            {
+                                data: null, // Auto-generate row numbers
+                                render: function (data, type, row, meta) {
+                                    return meta.row + 1;
+                                }
+                            },
+                            { data: 'collegeSelectionName' },
+                            { data: 'dateAdded' },
+                            { data: 'addedBy' },
+                            { data: 'email' },
+                            { data: 'country' },
+                            {
+                                data: 'status',
+                                render: function (data) {
+                                    const badgeClass = data === 'Completed' ? 'badge-success' : 'badge-danger';
+                                    return `<span class="badge ${badgeClass}">${data}</span>`;
+                                }
+                            },
+                            {
+                                data: 'id',
+                                render: function (data, type, row) {
+                                    if (row.status === 'Completed') {
+                                        return `<button class="btn btn-success view-evaluation btn-sm" title="View College Fit"  data-toggle="modal" data-target="#evaluationModal" data-id="${data}">
+                                     <i class="fa fa-eye"> </i>
+                                </button>
+                                         <a href="/College/ResumeEvaluation?collegeSelectionId=${data}" class="btn btn-primary btn-sm" title="Refine Your College Fit">
+                                     <i class="fa fa-edit"></i> </i>
+                                </a> 
+                                        <a href="/College/ViewHistorySelection?collegeSelectionId=${data}" class="btn btn-primary btn-sm" title="View Your College Fit History">
+                                     <i class="fa fa-history"></i> </i>
+                                </a>`;
+                                    } else {
+                                        return `<a href="/College/ResumeEvaluation?collegeSelectionId=${data}" class="btn btn-primary btn-sm" title="Continue Process">
+                                    <i class="fa fa-forward"></i>
+                                </a>`;
+                                    }
+                                }
+                            }
+                        ]
+                    });
+
+                    // Handle "View Evaluation" button clicks
+                    $(document).on('click', '.view-evaluation', function () {
+                        const evaluationId = $(this).data('id');
+                        //console.log('View evaluation for ID:', evaluationId);
+                        // Additional logic to fetch and display evaluation details
+                    });
+                });
+
+            </script>
+            <script>
+                $(document).on('click', '.view-evaluation', function() {
+                    var evaluationId = $(this).data('id');
+
+                    // Clear previous content
+                    $('#evaluationContent').html('<p>Loading...</p>');
+
+                    // Fetch evaluation details via AJAX
+                    $.ajax({
+                        url: '/College/GetEvaluationDetails',
+                        type: 'GET',
+                        data: { id: evaluationId },
+                        success: function(data) {
+                            $('#evaluationContent').html(data); // Load returned HTML into modal body
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 401) {
+                                // Handle session expired or unauthorized error
+                                alert("Your session has expired. Please log in again.");
+                                window.location.href = '/Account/Login'; // Redirect to login page
+                            } else if (xhr.status === 404) {
+                                // Handle evaluation not found
+                                $('#evaluationContent').html('<p>Evaluation not found.</p>');
+                            } else {
+                                // Handle general errors
+                                $('#evaluationContent').html('<p>Error loading evaluation details.</p>');
+                            }
+                        }
+                    });
+                });
+            </script>
+
+}

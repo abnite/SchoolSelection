@@ -1,0 +1,79 @@
+
+@{
+    ViewBag.Title = "Activity Logs";
+    Layout = "_BackendLayout";
+    
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            
+        </div>
+    </div>
+</div>
+
+        <!-- Static Table End -->
+        <section class="content">
+    
+            <div class="card">
+                <div class="card-body">
+                    <table id="usersTable" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Country</th>
+                            <th>Activity Type</th>
+                            <th>Activity Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Data will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          
+        </section>
+
+        @section Scripts {
+            <script>
+                $(document).ready(function () {
+                    $('#usersTable').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '@Url.Action("ActivityLogs")', // Correct endpoint
+                            type: 'GET',
+                            data: function (d) {
+                                // Pass additional parameters if needed
+                                d.searchValue = d.search.value; // Attach the search value
+                            },
+                            error: function (xhr, error, thrown) {
+                                console.error('Error in DataTables AJAX request:', error);
+                                console.error('Response:', xhr.responseText);
+                            }
+                        },
+                        columns: [
+                            {
+                                data: null,
+                                render: function (data, type, row, meta) {
+                                    return meta.row + 1; // Auto-increment row number
+                                }
+                            },
+                            { data: 'email' },
+                            { data: 'name' },
+                            { data: 'country' },
+                            { data: 'activityType' },
+                            { data: 'activityDate'}
+                        ]
+                    });
+                });
+
+
+            </script>
+        }
+        
+        

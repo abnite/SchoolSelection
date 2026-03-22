@@ -1,0 +1,65 @@
+@model LoginViewModel
+@{
+    Layout = "_LoginLayout";
+}
+
+<!-- Hero Section -->
+<section class="hero-section" id="home">
+    <video autoplay muted loop class="hero-video">
+        <source src="https://example.com/college-campus.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 font-weight-bold mb-4">Decide Confidently on Your College Selection</h1>
+                <p class="lead mb-4">Your colleges and criteria, combined with our process, community, and AI-powered tools to help you make the best decision.</p>
+                <div class="d-flex flex-wrap">
+                    <a href="#login" class="btn btn-primary btn-lg px-4 py-2 mr-3 mb-3">Login to Get Started</a>
+                    <a href="/Account/Register" class="btn btn-outline-light btn-lg px-4 py-2 mb-3">Create Account</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="login-container">
+                    <div class="login-card">
+                        <div class="text-center mb-4">
+                            <img src="~/images/schoolselection.jpeg" alt="Login Image" height="80" class="mb-3">
+                            <h3>User Login</h3>
+                        </div>
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger">@ViewBag.Error</div>
+                        }
+
+                        <form asp-action="Login" method="post" asp-controller="Account">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" asp-for="Email" class="form-control form-control-lg" placeholder="example@gmail.com" required>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" asp-for="Password" class="form-control form-control-lg" placeholder="******" required>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="remember">
+                                <label class="form-check-label" for="remember">Remember me</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
+                            <div class="text-center mt-3">
+                                <a href="/Account/passwordRecovery" class="text-muted">Forgot Password?</a>
+                            </div>
+                            <div class="text-center mt-3">
+                                <span class="text-muted">Don't have an account? </span>
+                                <a href="/Account/Register">Register</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

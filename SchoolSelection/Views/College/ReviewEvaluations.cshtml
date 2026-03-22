@@ -1,0 +1,72 @@
+@{
+    ViewBag.Title = "Review Evaluations - Final Summary";
+    Layout = "_BackendLayout";
+
+    string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
+    var CollegeSelectionName = "";
+
+    if (!string.IsNullOrEmpty(CollegeSelectionId))
+    {
+        var getCollegeSelection = await _Context.CollegeSelections
+            .Where(i => i.Id == Guid.Parse(CollegeSelectionId))
+            .FirstOrDefaultAsync();
+        CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
+    }
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Review Evaluations</h1>
+                <p class="lead">Final Summary for your College Selection</p>
+                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <!-- Final Summary Section -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Final Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(ViewBag.Summary?.ToString()))
+                        {
+                            <div class="summary-content p-3">
+                                @Html.Raw(ViewBag.Summary)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">
+                                <p>No summary available at the moment. Please ensure you have completed all evaluations.</p>
+                            </div>
+                        }
+                        <div class="text-center mt-4">
+                            <a asp-action="CollegeEvaluation" class="btn btn-secondary btn-lg mr-2">
+                                Back to Evaluating Colleges
+                            </a>
+                            <a asp-action="Reset" class="btn btn-success btn-lg">
+                                Begin New College Selection
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .summary-content {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+</style>

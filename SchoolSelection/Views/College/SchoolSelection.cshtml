@@ -1,0 +1,169 @@
+@model School
+
+@{
+    ViewBag.Title = "School Selection";
+    Layout = "_BackendLayout";
+}
+@{
+    var remainingColleges = ViewData["RemainingColleges"] as int? ?? 0;
+    remainingColleges = remainingColleges < 0 ? 0 : remainingColleges;
+    var planType = ViewData["PlanType"] as string;
+    string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
+    var CollegeSelectionName = "";
+
+    var getSchools = await _Context.Schools.ToListAsync();
+    if (!string.IsNullOrEmpty(CollegeSelectionId))
+    {
+        var getCollegeSelection = await _Context.CollegeSelections
+            .Where(i => i.Id == Guid.Parse(CollegeSelectionId))
+            .FirstOrDefaultAsync();
+        getSchools = await _Context.Schools
+            .Where(i => i.CollegeSelectionId == Guid.Parse(CollegeSelectionId))
+            .ToListAsync();
+
+        CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
+    }
+}
+<section class="content">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">School Selection</h1>
+                <p class="lead">Step 2 of 6: Define up to @remainingColleges schools to assess for your college selection.</p>
+                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        
+                        <div> <h3 class="card-title text-center">Your Current Plan: @planType</h3></div>
+                        <div class="ml-auto">
+                            <button class="btn btn-outline-light btn-sm" type="button"
+                                    data-toggle="collapse" data-target="#planDetails"
+                                    aria-expanded="false" aria-controls="planDetails">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                    <div class="collapse" id="planDetails">
+                        <div class="card-body text-center">
+                            <div class="alert alert-warning">
+                                <h4 class="alert-heading">⚠ Important Notice</h4>
+                                <p>
+                                    Each school you add counts toward your selection limit. <strong>Once added, unless deleted.</strong>
+                                    Please ensure you carefully select the schools you wish to evaluate.
+                                </p>
+                                <p><strong>Remaining Schools You Can Add:</strong> <span class="text-danger">@remainingColleges</span></p>
+                                @if (remainingColleges == 0)
+                                {
+                                    <hr>
+                                    <p class="mb-0">
+                                        You have reached your limit. To add more schools, please
+                                        <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Add or Update School Section -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Add or Update a School</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">You can add up to @remainingColleges more schools to evaluate. Click the Finished Entering Schools</p>
+                        
+                        <!-- Help Button -->
+                        <button type="button" class="btn btn-info mb-3" onclick="showHelp()">Help</button>
+                        
+                        <!-- Form -->
+                        <form asp-action="AddOrUpdateSchool" method="post">
+                            <input type="hidden" name="Id" value="@Model?.Id" />
+                            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId"/>
+                            <div class="form-group">
+                                <label for="schoolName">School Name</label>
+                                <input type="text" class="form-control form-control-lg mb-3" asp-for="Name" id="schoolName" placeholder="Enter school name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolInfo">Additional Information</label>
+                                <textarea class="form-control mb-3" asp-for="Info" id="schoolInfo" rows="3" placeholder="Enter additional information"></textarea>
+                            </div>
+
+                            @{
+                                var buttonText = Model?.Id == null ? "Add School" : "Update School";
+                            }
+                            <div class="d-flex justify-content-between mt-2">
+                                <button type="submit" class="btn btn-success" @(remainingColleges == 0 ? "disabled" : "")>@buttonText</button>
+                                @if (getSchools.Count == 0)
+                                {
+                                    <span class="btn btn-primary disabled" aria-disabled="true">
+                                        Finished Entering Schools → Next Step
+                                    </span>
+                                }
+                                else
+                                {
+                                    <a asp-action="CriteriaSelection" class="btn btn-primary">
+                                        Finished Entering Schools → Next Step
+                                    </a>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Added Schools Section -->
+        <div class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3 class="card-title">Added Schools</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (getSchools.Count == 0)
+                        {
+                            <p class="text-center text-muted">No schools have been added yet. Start by adding your first school above.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-group">
+                                @foreach (var school in getSchools)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong>@school.Name</strong><br />
+                                            <small class="text-muted">@school.Info</small>
+                                        </span>
+                                        <span>
+                                            <a asp-action="EditSchool" asp-route-id="@school.Id" class="btn btn-primary btn-sm">Edit</a>
+                                            <a asp-action="DeleteSchool" asp-route-id="@school.Id" class="btn btn-danger btn-sm">Delete</a>
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function showHelp() {
+        alert("Add up to "+@remainingColleges+" schools to evaluate. Provide the name and any additional information you want.");
+    }
+</script>

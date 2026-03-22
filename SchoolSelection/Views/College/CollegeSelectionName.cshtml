@@ -1,0 +1,127 @@
+@model SchoolSelection.Models.CollegeSelection
+
+@{
+    ViewBag.Title = "Enter Selection Name";
+    Layout = "_BackendLayout";
+
+    var dateYear = DateTime.Today.Year;
+    var remainingSelections = ViewData["RemainingSelections"] as int? ?? 0;
+    remainingSelections = remainingSelections < 0 ? 0 : remainingSelections;
+    var planType = ViewData["PlanType"] as string;
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Create College Selection</h1>
+                <p class="lead">Step 1 of 6: Enter a name for your college selection journey.</p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <!-- Plan Info -->
+      <!--  <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Your Current Plan: @planType</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="alert alert-warning">
+                            <h4 class="alert-heading">⚠ Important Notice</h4>
+                            <p>
+                                Each college selection counts toward your plan limit.
+                                <strong>Once used, it cannot be undone.</strong> Please proceed only when you're ready.
+                            </p>
+                            <p><strong>Remaining Selections:</strong> <span class="text-danger">@remainingSelections</span></p>
+
+                            @if (remainingSelections == 0)
+                            {
+                                <hr />
+                                <p>
+                                    You have reached your limit. To continue, please
+                                    <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Name Entry Form -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3 class="card-title"> Give Your Journey A Name</h3>
+                    </div>
+                    <div class="card-body">
+                        <form asp-controller="College" asp-action="CollegeSelection" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="CollegeSelectionName">Journey Name</label>
+                                <input type="text" asp-for="CollegeSelectionName" class="form-control form-control-lg"
+                                       placeholder="e.g., My @dateYear College Journey" required />
+                            </div>
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-success btn-lg px-5" onclick="confirmSubmission(event)">
+                                    Save & Proceed to College Selection
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title text-dark" id="confirmationModalLabel">⚠ Confirm Your Action</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (planType == "Free")
+                {
+                    <p><strong>Your current plan is Free.</strong> You are allowed <strong>1 college selection entry</strong>.</p>
+                }
+                else
+                {
+                    <p><strong>With your current plan</strong>, you are allowed <strong>@remainingSelections</strong> more college selection entries.</p>
+                }
+
+                <p>Once you proceed, this selection <strong>cannot be reversed</strong>.</p>
+                <p><strong>Are you sure you want to continue?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-success" id="confirmSubmit">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmSubmission(event) {
+            event.preventDefault(); // Stop form from submitting
+            $('#confirmationModal').modal('show'); // Show modal
+        }
+
+        $(document).ready(function () {
+            $('#confirmSubmit').click(function () {
+                $(this).prop('disabled', true).text("Submitting...");
+                $('form').submit(); // Submit the form
+            });
+        });
+    </script>
+}

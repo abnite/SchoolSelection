@@ -1,0 +1,111 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SchoolSelection.Data;
+using SchoolSelection.Interfaces;
+using SchoolSelection.Services;
+using SchoolSelection.ViewModels;
+
+var builder = WebApplication.CreateBuilder(args);
+// Configuration
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+// Add services to the container.
+builder.Configuration.AddJsonFile("appsettings.json");
+var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
+string openAIApiKey =appSettings.OpenAIApiKey;
+
+
+builder.Services.AddTransient<IOpenAIService>(provider=> new OpenAIService(openAIApiKey));
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<CollegeDbContext>(o =>
+    o.UseSqlServer(builder.Configuration.GetConnectionString("CollegeDefault")), ServiceLifetime.Scoped);
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(o =>
+{
+    o.Password.RequireDigit = false;
+    o.Password.RequireNonAlphanumeric = false;
+    o.Password.RequireUppercase = false;
+    o.Password.RequireLowercase = false;
+    o.Lockout.MaxFailedAccessAttempts = 6;
+    o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+}).AddDefaultTokenProviders().AddEntityFrameworkStores<CollegeDbContext>();
+
+// Configure session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.Configure<CookiePolicyOptions>(o =>
+{
+    o.CheckConsentNeeded = context => true;
+    o.MinimumSameSitePolicy = SameSiteMode.None;
+});
+builder.Services.ConfigureApplicationCookie(a =>
+{
+    a.AccessDeniedPath = "";
+    a.Cookie.Name = "CollegeSelectionApp";
+    a.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    a.LoginPath = "";
+    a.LogoutPath = "";
+    a.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+    a.SlidingExpiration = true;
+});
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromHours(24); // Adjust the duration as needed
+});
+
+//builder.Services.AddScoped<IOpenAIService, IOpenAIService>();
+
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseCookiePolicy();
+app.UseSession();
+
+// Add this middleware to modify the Content-Security-Policy header
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Remove("X-Frame-Options");
+    context.Response.Headers.Add("Content-Security-Policy", "frame-ancestors 'self' https://www.froootpizza.com;");
+
+   // context.Response.Headers.Remove("Content-Security-Policy");
+
+    // Allow only https://www.froootpizza.com to frame the content
+    //context.Response.Headers.Add("Content-Security-Policy", "frame-ancestors https://www.froootpizza.com");
+    // context.Response.Headers.Add("X-Frame-Options", "ALLOW-FROM https://www.froootpizza.com");
+
+
+    await next();
+});
+
+
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=College}/{action=Index}/{id?}");
+
+app.Run();

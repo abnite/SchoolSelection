@@ -1,0 +1,150 @@
+@model CollegeSelection
+
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "_BackendLayout";
+    var dateYear = DateTime.Today.Year;
+}
+
+@{
+    var remainingSelections = ViewData["RemainingSelections"] as int? ?? 0;
+    remainingSelections = remainingSelections < 0 ? 0 : remainingSelections;
+    var planType = ViewData["PlanType"] as string;
+    string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
+    var CollegeSelectionName = "";
+    if (!string.IsNullOrEmpty(CollegeSelectionId))
+    {
+        var getCollegeSelection = await _Context.CollegeSelections
+            .Where(i => i.Id == Guid.Parse(CollegeSelectionId))
+            .FirstOrDefaultAsync();
+
+        CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
+    }
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Welcome to Your College Selection Journey</h1>
+                <p class="lead">Plan, evaluate, and decide on your future college with ease!</p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title text-center">Your Current Plan: @planType</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="alert alert-warning">
+                            <h4 class="alert-heading">⚠ Important Notice</h4>
+                            <p>
+                                Every college selection you create **counts toward your limit**. <strong>Once used, it cannot be undone.</strong>
+                                Please ensure you are **ready to proceed** before making a selection.
+                            </p>
+                            <p><strong>Remaining Selections:</strong> <span class="text-danger">@remainingSelections</span></p>
+                            @if (remainingSelections == 0)
+                            {
+                                <hr>
+                                <p class="mb-0">
+                                    You have reached your limit. To continue, please
+                                    <a href="@Url.Action("SubscriptionOptions", "SubscriptionPlan")" class="alert-link">upgrade your plan</a>.
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video and Instructions Section -->
+        <div class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h3 class="card-title">Getting Started</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <iframe class="embed-responsive-item rounded shadow-sm w-100" 
+                                    style="height: 400px;" 
+                                    src="Video/CollegeSelection.mp4" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <h4 class="text-center mb-4">Step 1 of 6: Set Up Your College Selection</h4>
+                        <p class="text-muted text-center">Enter a name for your selection (e.g., "My @{ @dateYear } College Selection") or continue with an existing selection in progress.</p>
+
+                        <!-- Form Section -->
+                        <form asp-controller="College" asp-action="CollegeSelection" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input type="text" asp-for="CollegeSelectionName" class="form-control form-control-lg" 
+                                       value="@CollegeSelectionName" 
+                                       id="selectionName1" 
+                                       placeholder="Enter your college selection name">
+                            </div>
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-success btn-lg px-5"  onclick="confirmSubmission(event)">
+                                    Save & Proceed to College Selection
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Section -->
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <p class="text-muted">
+                    Need help? Watch the video above for guidance or contact support for assistance.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title text-dark" id="confirmationModalLabel">⚠ Confirm Your Action</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Once you proceed, this selection **cannot be reversed**.</p>
+                <p><strong>Are you sure you want to continue?</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-success" id="confirmSubmit">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+
+<script>
+    function confirmSubmission(event) {
+        event.preventDefault(); // Prevent form submission
+        $('#confirmationModal').modal('show'); // Show the confirmation modal
+    }
+
+    $(document).ready(function () {
+        $("#confirmSubmit").click(function () {
+            $("form").submit(); // Submit the form when confirmed
+        });
+    });
+</script>
+}

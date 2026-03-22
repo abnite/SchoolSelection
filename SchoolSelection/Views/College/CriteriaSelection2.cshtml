@@ -1,0 +1,130 @@
+@model Criteria
+
+@{
+    ViewBag.Title = "Criteria Selection";
+    Layout = "_BackendLayout";
+}
+
+@{
+    string CollegeSelectionId = ViewData["CollegeSelectionId"] as string;
+    var CollegeSelectionName = "";
+
+    var getCriteria = await _Context.Criteria.ToListAsync();
+    if (!string.IsNullOrEmpty(CollegeSelectionId))
+    {
+        var getCollegeSelection = await _Context.CollegeSelections
+            .Where(i => i.Id == Guid.Parse(CollegeSelectionId))
+            .FirstOrDefaultAsync();
+        getCriteria = await _Context.Criteria
+            .Where(i => i.CollegeSelectionId == Guid.Parse(CollegeSelectionId))
+            .ToListAsync();
+
+        CollegeSelectionName = getCollegeSelection.CollegeSelectionName;
+    }
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Criteria Selection</h1>
+                <p class="lead">Step 3 of 6: Define up to 15 criteria to evaluate colleges.</p>
+                <p class="text-muted"><strong>College Selection:</strong> <span class="text-primary">@CollegeSelectionName</span></p>
+                <hr class="my-4" style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <!-- Add or Update Criteria Section -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title">Add or Update a Criteria</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Add criteria to evaluate your colleges effectively. You can add up to 15 criteria.</p>
+                        <p class="text-muted">Criteria Added: <strong id="criteriaCounter">@getCriteria.Count</strong> of 15</p>
+                        
+                        <!-- Help Button -->
+                        <button type="button" class="btn btn-info mb-3" onclick="showHelp()">Help</button>
+
+                        <form asp-action="AddCriteria" method="post">
+                            <input type="hidden" asp-for="CollegeSelectionId" value="@CollegeSelectionId" />
+                            <div class="form-group">
+                                <label for="criteriaName">Criteria Name:</label>
+                                <input type="text" class="form-control form-control-lg mb-3" id="criteriaName" asp-for="Name" placeholder="Enter evaluation criteria" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="importance">Criteria Importance:</label>
+                                <div id="importance" class="form-check">
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Importance" type="radio" name="Importance" value="Low" class="form-check-input"> Low
+                                    </label>
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Importance" type="radio" name="Importance" value="Slightly" class="form-check-input"> Slightly
+                                    </label>
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Importance" type="radio" name="Importance" value="Neutral" class="form-check-input" checked> Neutral
+                                    </label>
+                                    <label class="form-check-label mr-3">
+                                        <input asp-for="Importance" type="radio" name="Importance" value="Very" class="form-check-input"> Very
+                                    </label>
+                                    <label class="form-check-label">
+                                        <input asp-for="Importance" type="radio" name="Importance" value="Extremely" class="form-check-input"> Extremely
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-group mt-4" role="group" aria-label="Navigation Buttons">
+                                <a asp-action="SchoolSelection" class="btn btn-secondary">Previous</a>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                                <a asp-action="CollegeEvaluation" class="btn btn-primary @(getCriteria.Count == 0 ? "disabled" : "")">Next</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Added Criteria Section -->
+        <div class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3 class="card-title">Added Criteria</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (getCriteria.Count == 0)
+                        {
+                            <p class="text-center text-muted">No criteria have been added yet. Start by adding your first criteria above.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-group">
+                                @foreach (var item in getCriteria)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong>@item.Name</strong><br />
+                                            <small class="text-muted">Importance: @item.Importance</small>
+                                        </span>
+                                        <span>
+                                            <a asp-action="EditCriteria" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Edit</a>
+                                            <a asp-action="DeleteCriteria" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function showHelp() {
+        alert("Define the criteria that are important for evaluating colleges i.e. Degree Program, Size, Diversity, Cost etc. Assign an importance level to each criterion.");
+    }
+</script>

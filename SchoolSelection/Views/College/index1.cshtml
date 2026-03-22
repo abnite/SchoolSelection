@@ -1,0 +1,194 @@
+@model SchoolSelection.ViewModels.HomeViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "_BackendLayout";
+    var recent = Model.SavedSelections;
+}
+
+<section class="content">
+    <div class="container">
+
+        <!-- Welcome -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-4 mt-4">Welcome to Your College Selection Journey</h1>
+                <p class="lead">
+                    Your companion to help you navigate the complexities of choosing the right college fit.
+                </p>
+                <hr class="my-4" style="width:50%; margin:auto;">
+            </div>
+        </div>
+
+      
+
+        <!-- Plan Card -->
+        <div class="row mt-4">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between">
+                        <h3 class="card-title mb-0">Your Current Plan: @Model.PlanType</h3>
+                        <button class="btn btn-outline-light btn-sm" type="button" data-toggle="collapse" data-target="#planDetails">
+                            View Details
+                        </button>
+                    </div>
+                    <div class="collapse" id="planDetails">
+                        <div class="card-body text-center">
+                            <div class="alert alert-warning mb-0">
+                                <h4 class="alert-heading">⚠ Important Notice</h4>
+                                <p>
+                                    Every selection counts toward your plan limit.
+                                    <strong>Remaining:</strong> <span class="text-danger">@Model.RemainingSelections</span>
+                                </p>
+                                @if (Model.RemainingSelections == 0)
+                                {
+                                    <p>You’ve reached your limit. <a href="@Url.Action("SubscriptionOptions","SubscriptionPlan")">Upgrade</a>.</p>
+                                }
+                                else
+                                {
+                                    <p><a href="@Url.Action("SubscriptionOptions","SubscriptionPlan")">Upgrade</a> for more selections.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Recent Journeys -->
+        <div class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">My Recent Journeys</h5>
+                        <a href="@Url.Action("ViewSelection", "College", new { area = "" })" class="btn btn-sm btn-link text-white">
+                            See All →
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (recent.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var sel in recent)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>@sel.CollegeSelectionName</strong><br />
+                                            <small class="text-muted">@sel.DateAdded.ToString("ddd MMM, yyyy")</small>
+                                        </div>
+                                        <div>
+                                            @if (sel.IsCompleted)
+                                            {
+                                                <a class="btn btn-sm btn-success view-evaluation" title="View Results"
+                                                   data-toggle="modal" data-target="#evaluationModal"
+                                                   data-id="@sel.Id">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="@Url.Action("ResumeEvaluation","College", new { collegeSelectionId=sel.Id })"
+                                                   class="btn btn-sm btn-primary" title="Continue">
+                                                    <i class="fa fa-forward"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <div class="p-3 text-center text-muted">
+                                You haven’t started any journeys yet.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video + Start -->
+        <div id="videoSection" class="row mt-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="card-title mb-0">Getting Started</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <video controls muted style="width:100%; border-radius:10px; height:400px;">
+                            <source src="~/Video/CollegeSelection.mp4" type="video/mp4">
+                            Your browser does not support this video.
+                        </video>
+                        <p class="text-muted mt-3">Please watch this before beginning your journey.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <a href="@Url.Action("CollegeSelectionName","College")"
+                   class="btn btn-success btn-lg px-5">Start Your Journey</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="modal fade" id="evaluationModal" tabindex="-1" aria-labelledby="evaluationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="evaluationModalLabel">Evaluation Results</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="evaluationContent">
+                    <!-- Evaluation details will load here dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Listen for when the modal is about to be shown
+        $('#evaluationModal').on('show.bs.modal', function (event) {
+            var button       = $(event.relatedTarget); // the <a> that triggered the modal
+            var evaluationId = button.data('id');      // pull from data-id
+            var modal        = $(this);
+
+            // Show a loading state
+            modal.find('#evaluationContent').html('<p>Loading...</p>');
+
+            // Fetch the evaluation details
+            $.ajax({
+                url: '/College/GetEvaluationDetails',
+                type: 'GET',
+                data: { id: evaluationId },
+                success: function (data) {
+                    modal.find('#evaluationContent').html(data);
+                },
+                error: function (xhr) {
+                    var msg = 'Error loading evaluation details.';
+                    if (xhr.status === 401) {
+                        msg = 'Session expired. Redirecting to login…';
+                        window.location.href = '/Account/Login';
+                    } else if (xhr.status === 404) {
+                        msg = 'Evaluation not found.';
+                    }
+                    modal.find('#evaluationContent').html('<p>' + msg + '</p>');
+                }
+            });
+        });
+    </script>
+}
+

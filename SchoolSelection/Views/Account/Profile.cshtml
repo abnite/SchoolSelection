@@ -1,0 +1,100 @@
+@model ChangePasswordViewModel
+@{
+    ViewBag.Title = "Profile";
+    Layout = "_BackendLayout";
+
+    var EmailAddress = User.Identity.Name;
+    var getUser = await _Context.Users.Where(i => i.UserName == EmailAddress).FirstOrDefaultAsync();
+}
+
+<section class="content">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-md-12 text-center my-5">
+                <h1 class="display-4">Your Profile</h1>
+                <p class="lead text-muted">Manage your profile information and update your password below.</p>
+                <hr style="width: 50%; margin: auto;">
+            </div>
+        </div>
+
+        <!-- Profile Information Section -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title">Profile Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Name -->
+                            <div class="col-md-6 mb-3">
+                                <label class="bold-label">Name</label>
+                                <input readonly="readonly" class="form-control form-control-lg" value="@getUser.FirstName @getUser.LastName" />
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label class="bold-label">Email</label>
+                                <input readonly="readonly" class="form-control form-control-lg" value="@getUser.Email" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Section -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title">Change Password</h3>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="ChangePassword" asp-controller="Account" method="post">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+
+                            <!-- Old Password -->
+                            <div class="form-group">
+                                <label asp-for="OldPassword" class="font-weight-bold">Old Password</label>
+                                <input asp-for="OldPassword" class="form-control form-control-lg" type="password" placeholder="Enter old password" />
+                                <span asp-validation-for="OldPassword" class="text-danger"></span>
+                            </div>
+
+                            <!-- New Password -->
+                            <div class="form-group">
+                                <label asp-for="NewPassword" class="font-weight-bold">New Password</label>
+                                <input asp-for="NewPassword" class="form-control form-control-lg" type="password" placeholder="Enter new password" />
+                                <span asp-validation-for="NewPassword" class="text-danger"></span>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="form-group">
+                                <label asp-for="ConfirmPassword" class="font-weight-bold">Confirm Password</label>
+                                <input asp-for="ConfirmPassword" class="form-control form-control-lg" type="password" placeholder="Re-enter new password" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-success btn-lg px-5">Change Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bold-label {
+        font-weight: bold;
+    }
+
+    .form-control[readonly] {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+    }
+</style>

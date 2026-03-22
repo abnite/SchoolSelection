@@ -1,0 +1,205 @@
+@using SchoolSelection.Controllers
+
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "_BackendLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        </div>
+    </div>
+</div>
+
+
+<section class="content">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Registered Users -->
+                    <div class="col-lg-4 col-6">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3 id="totalUsers">0</h3>
+                                <p>Registered Users</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- College Selections -->
+                    <div class="col-lg-4 col-6">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3 id="totalCollegeSelections">0</h3>
+                                <p>College Selections</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-school"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Selections -->
+                    <div class="col-lg-4 col-6">
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3 id="totalCompletedSelections">0</h3>
+                                <p>Completed Selections</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="yearSelect">Select Year:</label>
+                            <select id="yearSelect" class="form-control" style="width: 200px;">
+                                @for (var year = DateTime.UtcNow.Year; year >= 2024; year--) // Adjust range as needed
+                                {
+                                    if (year == DateTime.UtcNow.Year)
+                                    {
+                                        <option value="@year" selected>@year</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@year">@year</option>
+                                    }
+                                    
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Line Graph -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">College Selections Created for <span id="selectedYear">@DateTime.UtcNow.Year</span> (Monthly)</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="selectionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            const yearSelect = $('#yearSelect');
+            const selectionsChartCanvas = document.getElementById('selectionsChart').getContext('2d');
+            let selectionsChart;
+
+            function fetchDashboardData(year) {
+                $.ajax({
+                    url: '@Url.Action("GetDashboardData")',
+                       // '/Dashboard/GetDashboardData', // Replace with your actual controller route
+                    type: 'GET',
+                    data: { year: year }, // Pass the selected year
+                    success: function (response) {
+                        if (!response.monthlyData || response.monthlyData.length === 0) {
+                            console.error('Monthly data is missing or empty.');
+                            return;
+                        }
+
+                        // Update Metrics
+                        $('#totalUsers').text(response.totalUsers);
+                        $('#totalCollegeSelections').text(response.totalCollegeSelections);
+                        $('#totalCompletedSelections').text(response.totalCompletedSelections);
+
+                        // Update Year in Title
+                        $('#selectedYear').text(year);
+
+                        // Prepare Data for Chart
+                        const labels = [
+                            'January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'
+                        ];
+                        const data = response.monthlyData.map(m => m.count || 0);
+
+                        // Update Chart
+                        if (selectionsChart) {
+                            selectionsChart.data.datasets[0].data = data;
+                            selectionsChart.data.labels = labels;
+                            selectionsChart.update();
+                        } else {
+                            selectionsChart = new Chart(selectionsChartCanvas, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Selections Created',
+                                        data: data,
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top'
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Months'
+                                            }
+                                        },
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Selections'
+                                            },
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error fetching dashboard data:', xhr.responseText);
+                    }
+                });
+            }
+
+            // Fetch data for the initially selected year
+            fetchDashboardData(yearSelect.val());
+
+            // Update data when the year changes
+            yearSelect.change(function () {
+                const selectedYear = $(this).val();
+                fetchDashboardData(selectedYear);
+            });
+        });
+    </script>
+}
+

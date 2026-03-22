@@ -1,0 +1,112 @@
+﻿@{
+    var currentDate = DateTime.UtcNow.Year;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" 
+      content="base-uri 'self';
+               default-src 'self';
+               img-src data: https:;
+               object-src 'none';
+               script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.ckeditor.com https://code.jquery.com https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com;
+               style-src 'self' https://fonts.googleapis.com 'unsafe-inline' https://cdn.ckeditor.com https://stackpath.bootstrapcdn.com;
+               font-src 'self' data: https://fonts.gstatic.com;
+               media-src *;
+               upgrade-insecure-requests;">
+
+
+    <title>@ViewData["Title"] - College Selection System</title>
+   
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            padding-top: 70px;
+        }
+        .navbar {
+            background-color: #006600 !important; /* Dark green background */
+        }
+        .navbar-brand, .nav-link {
+            color: #fff !important; /* White text for navigation links */
+        }
+        .header-text {
+            color: #005500 !important;
+        }
+        .btn-primary, .btn-success, .btn-secondary {
+            background-color: #006600 !important;
+            border-color: #004400 !important;
+        }
+        .form-control {
+            border-color: #006600 !important;
+        }
+        .list-group-item {
+            border-left: 5px solid #006600;
+        }
+        .footer {
+            padding: 20px 0;
+            background-color: #f7f7f7;
+            border-top: 1px solid #e7e7e7;
+        }
+        .jumbotron-custom {
+            background-color: #e9ecef;
+            color: #333;
+            border-radius: 0.3rem;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Navigation bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">College Selection System</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Pricing</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main role="main" class="container py-4">
+        <div class="jumbotron jumbotron-custom">
+            <h1>Welcome to the College Selection System!</h1>
+             <p class="lead">
+                    Choosing a college is about more than the name on the diploma. Where a student
+                    goes to school touches numerous aspects of his or her life, from academic studies
+                    to social activities and beyond. Considering the importance of this decision,
+                    prospective students should think carefully about where they decide to enroll
+                    when looking over their options.’ - (Hopkins, K. and Moody, J.,2019, Nov 6) ‘10
+                    Steps to Choosing the Right College’, U.S. News and World Report.
+                </p>
+            
+        </div>
+        @RenderBody()
+    </main>
+    <footer class="footer bg-light text-center text-lg-start">
+        <div class="container text-muted py-4">
+            &copy;@currentDate School Selection System. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

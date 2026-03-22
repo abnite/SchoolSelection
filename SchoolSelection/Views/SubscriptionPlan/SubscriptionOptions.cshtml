@@ -1,0 +1,203 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<SubscriptionPlan>
+
+@{
+    ViewBag.Title = "Choose Your Subscription";
+    Layout = "_BackendLayout";
+    
+    // Get current user's active subscriptions
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Or your user ID retrieval method
+    var activeSubscriptions = await _Context.Subscriptions
+        .Include(s => s.SubscriptionPlan)
+        .Where(s => s.AddedBy.Id == userId && s.IsActive == true)
+        .ToListAsync();
+}
+
+<section class="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Available Subscription Plans</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name/Level</th>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <th>
+                                @plan.SubscriptionPlanName
+                                <small>
+                                    @if (plan.Price == 0)
+                                    {
+                                        @:(Free)
+                                    }
+                                    else if (plan.Type.Contains("Serious"))
+                                    {
+                                        @:($20 Yearly or $5 Monthly)
+                                    }
+                                    else
+                                    {
+                                        @:($@plan.Price @plan.Type)
+                                    }
+                                </small>
+                            </th>
+                        }
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Price</td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>
+                                @if (plan.Price == 0)
+                                {
+                                    @:Free
+                                }
+                                else if (plan.Type.Contains("Serious"))
+                                {
+                                    @:$20 Yearly or $5 Monthly
+                                }
+                                else
+                                {
+                                    @:$@plan.Price @plan.Type
+                                }
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>
+                            Max Journeys
+                            <i class="fas fa-info-circle" data-toggle="tooltip" title="The maximum number of journeys you can have for evaluating colleges. A journey allows for a maximum number of colleges to be evaluated."></i>
+                        </td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>@plan.MaxSelections</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>
+                            Max Colleges Per Journey
+                            <i class="fas fa-info-circle" data-toggle="tooltip" title="The maximum number of colleges that can be evaluated in a journey."></i>
+                        </td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>@plan.MaxColleges</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>
+                            Max Criteria Per Journey
+                            <i class="fas fa-info-circle" data-toggle="tooltip" title="The maximum number of criteria you can use for an evaluation in a journey."></i>
+                        </td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>@plan.MaxCriteria</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>
+                            Max Submissions Per Journey
+                            <i class="fas fa-info-circle" data-toggle="tooltip" title="The maximum number of times you can submit to the engine to get your recommendation for a set of colleges and criteria."></i>
+                        </td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>@plan.MaxSubmissions</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>
+                            College Life Consultant
+                            <i class="fas fa-info-circle" data-toggle="tooltip" title="A scheduled call with a college life consultant to assist you."></i>
+                            </td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>
+                                @if (plan.SubscriptionPlanName.Contains("Save Real Application"))
+                                {
+                                    @:15 min consult
+                                }
+                                else
+                                {
+                                    @:-
+                                }
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        @foreach (var plan in Model.OrderBy(p => p.Price))
+                        {
+                            <td>
+                                @if (activeSubscriptions.Any(s => s.SubscriptionPlanId == plan.Id))
+                                {
+                                   
+                                    <form asp-action="Subscribe" method="post" class="form-inline mb-2">
+                                        <input type="hidden" name="planId" value="@plan.Id" />
+                                        <div class="form-group mb-">
+                                            <select class="form-control form-control-sm mr-2" name="paymentMethod" required>
+                                                <option value="PayPal">PayPal</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm" title="Subscribe">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </form>
+                                    <button class="btn btn-outline-success" disabled>
+                                        <i class="fas fa-check-circle"></i> Current Plan
+                                    </button>
+                                   
+                                }
+                                else if (plan.Price == 0)
+                                {
+                                    if (activeSubscriptions.Count == 0)
+                                    {
+                                        <form asp-action="Subscribe" method="post">
+                                            <input type="hidden" name="planId" value="@plan.Id" />
+                                            <button class="btn btn-outline-success" disabled>
+                                                <i class="fas fa-check-circle"></i> Current Plan
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-outline-secondary" disabled>
+                                            <i class="fas fa-times-circle"></i> Downgrade Not Allowed
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <form asp-action="Subscribe" method="post" class="form-inline">
+                                        <input type="hidden" name="planId" value="@plan.Id" />
+                                        <div class="form-group mb-2 mr-2">
+                                            <select class="form-control form-control-sm" name="paymentMethod" required>
+                                                <option value="PayPal">PayPal</option>
+                                            </select>
+                                        </div>
+                                        <br/>
+                                        <button type="submit" class="btn btn-primary btn-sm mb-2" title="Subscribe">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        }
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

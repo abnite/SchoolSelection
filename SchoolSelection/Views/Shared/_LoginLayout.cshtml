@@ -1,0 +1,376 @@
+﻿<!DOCTYPE html><!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decide Confidently <sup>TM</sup> - College Selection Portal</title>
+    <link rel="icon" href="~/images/schoolselection.jpeg" type="image/png">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+        }
+
+        /* anywhere after the Bootstrap link */
+        .blockquote-footer {
+            color: #ffffff !important;  /* Bootstrap’s “muted” gray */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .register-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .register-card {
+            padding: 2rem;
+        }
+
+        .login-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .login-card {
+            padding: 2rem;
+        }
+        .form-control-lg {
+            height: calc(2.5em + 1rem + 2px);
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+        }
+
+        .select2-container--default .select2-selection--single {
+            height: calc(2.5em + 1rem + 2px);
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            border: 1px solid #ced4da;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: calc(2.5em + 1rem + 2px);
+        }
+
+        .features-section {
+            padding: 4rem 0;
+            background-color: white;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .stats-section {
+            background-color: var(--light);
+            padding: 3rem 0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+
+        .btn-outline-primary {
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--secondary);
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+        }
+
+        @@media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+            }
+
+            .login-container {
+                margin-top: 2rem;
+            }
+        }
+
+        .testimonial-card {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background-color: #fff;
+            border: 1px solid #eaeaea;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand font-weight-bold" href="#" style="color: var(--secondary);">
+            <img src="~/images/schoolselection.jpeg" alt="Logo" height="40" class="mr-2">
+            Decide Confidently
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="College" asp-action="Index">College Selection Tool</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Events">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="About_Us">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="community" asp-controller="Account">Community</a>
+                </li>
+                <li class="nav-item ml-lg-3">
+                    <a class="btn btn-outline-primary" href="/Account/Register">Register</a>
+                </li>
+                <li class="nav-item ml-lg-2">
+                    <a class="btn btn-primary" href="/Account/Login">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<section class="content-header">
+    @{
+        if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success alert-dismissible" id="DIVHide" style="margin:10px">
+                <button class="close" aria-hidden="true" type="button" data-dismiss="alert">×</button>
+                <Center><i class="icon fa fa-check"></i>   @TempData["Message"]</Center>
+
+            </div>
+        }
+        if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible" id="DIVHide" style="margin:10px">
+                <button class="close" aria-hidden="true" type="button" data-dismiss="alert">×</button>
+                <Center><i class="icon fa fa-check"></i>   @TempData["ErrorMessage"]</Center>
+
+            </div>
+        }
+    }
+</section>
+
+@RenderBody()
+   <!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="stat-number">1.2M+</div>
+                <p class="lead">Users submitted college apps</p>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="stat-number">95+%</div>
+                <p class="lead">satisfaction with using our pre-college consulting service</p>
+            </div>
+           <!-- <div class="col-md-3 mb-4 mb-md-0">
+                <div class="stat-number">5%</div>
+                <p class="lead">Transferred (not satisfied)</p>
+            </div>-->
+            <div class="col-md-4">
+                <div class="stat-number">2025</div>
+                <p class="lead">Metrics updated for current year</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="font-weight-bold">Unlock Your College Potential</h2>
+            <p class="lead">Level up with our community-powered tools and resources</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <a asp-action="Index" asp-controller="College" style="color: black">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <h4>College Selection Tool</h4>
+                            <p>Our AI-powered tool matches you with the perfect colleges based on your criteria and goals.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-action="Events" asp-controller="Account" style="color: black">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h4>Events & Panels</h4>
+                            <p>Join our in-person or virtual events with admissions experts and current students.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a asp-action="community" asp-controller="Account" style="color: black">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4>Community Support</h4>
+                            <p>Connect with peers and mentors who can help guide your college decision process.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="font-weight-bold mb-4">Become Part of Our #1 Community</h2>
+        <p class="lead mb-4">Join thousands of students making confident college decisions</p>
+        <a href="/Account/Register" class="btn btn-primary btn-lg px-5 py-3">Get Started Now</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <h5>Decide Confidently</h5>
+                <p>Helping students make the best college decisions since 2015.</p>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a asp-action="Index" asp-controller="College" class="text-white">College Selection Tool</a></li>
+                    <li><a asp-action="About_Us" class="text-white">About Us</a></li>
+                    <li><a class="text-white" asp-action="Terms_Conditions">Terms & Condition</a></li>
+                    <li><a class="text-white" asp-action="Privacy_Policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                <h5>Connect</h5>
+                <ul class="list-unstyled">
+                    <li><a href="https://www.facebook.com/profile.php?id=100066758075620" class="text-white"><i class="fab fa-facebook-f mr-2"></i> Facebook</a></li>
+                   <!-- <li><a href="https://www.facebook.com/profile.php?id=100066758075620" class="text-white"><i class="fab fa-twitter mr-2"></i> Twitter</a></li>-->
+                    <li><a href="https://instagram.com/froootpizza/" class="text-white"><i class="fab fa-instagram mr-2"></i> Instagram</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h5>Contact Us</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope mr-2"></i> decideconfidently@froootpizza.com</li>
+                   <!-- <li><i class="fas fa-phone mr-2"></i> (555) 123-4567</li>-->
+                </ul>
+            </div>
+        </div>
+        <hr class="bg-white my-4">
+        <div class="text-center">
+            <p class="mb-0">&copy; @DateTime.Now.Year Decide Confidently. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
