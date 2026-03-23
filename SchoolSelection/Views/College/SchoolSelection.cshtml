@@ -131,7 +131,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <button type="submit"
                       class="btn btn-success"
-                      @(remainingColleges == 0 ? "disabled" : "")>
+                      @(remainingColleges == 0 && Model?.Id == null ? "disabled" : "")>
                 <i class="fas fa-@(Model?.Id == null ? "plus" : "save") mr-1"></i>
                 @(Model?.Id == null ? "Add School" : "Update School")
               </button>

@@ -1,163 +1,144 @@
 @{
-    ViewBag.Title = "Events - Decide Confidently";
+    ViewBag.Title = "Events — Decide Confidently";
     Layout = "_LoginLayout";
 }
 
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container hero-content">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h1 class="display-4 font-weight-bold mb-4">Expert Panel Discussions</h1>
-                <p class="lead mb-4">Gain insider knowledge from top college admissions experts</p>
+<!-- Page hero -->
+<div class="page-hero">
+  <div class="container hero-content text-center">
+    <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.7;margin-bottom:.5rem">
+      Expert Knowledge
+    </p>
+    <h1 class="display-4 font-weight-bold mb-3">Expert Panel Discussions</h1>
+    <p class="lead mb-0" style="opacity:.85;max-width:540px;margin:0 auto">
+      Gain insider knowledge from top college admissions experts
+    </p>
+  </div>
+</div>
+
+<section style="padding:4rem 0;background:var(--surface)">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+
+        <!-- Invitation card -->
+        <div class="card mb-5 animate-up">
+          <div class="card-body text-center" style="padding:2.5rem!important">
+            <div style="display:inline-flex;align-items:center;gap:.5rem;background:var(--primary-light);border-radius:20px;padding:.4rem 1rem;color:var(--primary);font-size:.78rem;font-weight:700;margin-bottom:1.25rem">
+              <i class="fas fa-calendar-check"></i> Exclusive Invitation
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Main Event Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card shadow-sm border-0 mb-5">
-                    <div class="card-body p-4 p-md-5">
-                        <div class="text-center mb-4">
-                            <h2 class="font-weight-bold">Exclusive Invitation</h2>
-                            <!--<div class="badge bg-primary text-white p-2 mt-2 mb-3">
-                                <i class="fas fa-calendar-alt me-2"></i>Next Panel: September 2025
-                            </div>-->
-                        </div>
-
-                        <h3 class="text-center mb-4">Expert Q&A Panel Discussions for College Success!</h3>
-                        <p class="lead text-center mb-4">
-                            We're thrilled to offer a unique opportunity for your organization to participate in our
-                            upcoming Q&A panel discussions, tailored specifically for students and parents navigating
-                            the college selection process.
-                        </p>
-
-                        <div class="row my-5">
-                            <div class="col-md-6 mb-4">
-                                <div class="card h-100 border-0 bg-light">
-                                    <div class="card-body">
-                                        <h4 class="card-title text-center mb-3">
-                                            <i class="fas fa-user-graduate text-primary me-2"></i>Meet Our Panelists
-                                        </h4>
-                                        <ul class="list-unstyled">
-                                            <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i>Degrees from Ivy League and top-tier institutions</li>
-                                            <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i>Yale, Stanford, Wesleyan alumni</li>
-                                            <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i>MIT, University of Pennsylvania graduates</li>
-                                            <li><i class="fas fa-check-circle text-primary me-2"></i>Villanova and other prestigious schools</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card h-100 border-0 bg-light">
-                                    <div class="card-body">
-                                        <h4 class="card-title text-center mb-3">
-                                            <i class="fas fa-lightbulb text-primary me-2"></i>You'll Gain
-                                        </h4>
-                                        <ul class="list-unstyled">
-                                            <li class="mb-2"><i class="fas fa-star text-primary me-2"></i>Expertise in college interviews</li>
-                                            <li class="mb-2"><i class="fas fa-star text-primary me-2"></i>Admissions strategy insights</li>
-                                            <li class="mb-2"><i class="fas fa-star text-primary me-2"></i>Answers to pressing questions</li>
-                                            <li><i class="fas fa-star text-primary me-2"></i>Firsthand experiences from successful applicants</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <div class="alert alert-info d-inline-block">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <strong>March 31st event completed</strong> <!-- – Stay tuned for September 2025 panel!-->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Past Panel Event Gallery
-                <h3 class="text-center mb-4">Past Panel Highlights</h3>
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/events/panel-discussion-1.jpg" class="card-img-top" alt="Panel discussion">
-                            <div class="card-body">
-                                <h5 class="card-title">March 2023 Panel</h5>
-                                <p class="card-text">Our experts sharing insights on college admissions.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/events/audience-engagement.jpg" class="card-img-top" alt="Audience engagement">
-                            <div class="card-body">
-                                <h5 class="card-title">Q&A Session</h5>
-                                <p class="card-text">Students getting their questions answered.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/events/panelists-networking.jpg" class="card-img-top" alt="Panelists networking">
-                            <div class="card-body">
-                                <h5 class="card-title">Post-Panel Networking</h5>
-                                <p class="card-text">One-on-one conversations with experts.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- New Student Experience Gallery -->
-                <h3 class="text-center mt-5 mb-4">Student Campus Experience</h3>
-                <div class="row">
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/Event4.jpeg" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Male student group">
-                            <div class="card-body">
-                                <p class="card-text">Students bonding during the HBCU tour experience.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/Event5.jpeg" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Female students group">
-                            <div class="card-body">
-                                <p class="card-text">Campus stop at Bennett College – learning and fun combined.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/Event1.jpeg" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Full student group photo at Morris Brown">
-                            <div class="card-body">
-                                <p class="card-text">Group photo at Morris Brown College – unity in purpose.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="~/images/Event2.jpeg" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Campus tour guide">
-                            <div class="card-body">
-                                <p class="card-text">Tour guide explaining student life on a vibrant HBCU campus.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Video Highlight -->
-                <div class="mt-5 text-center">
-                    <h3 class="mb-4">Watch Highlights From Our Last Event</h3>
-                    <div class="embed-responsive embed-responsive-16by9 shadow mb-4">
-                        <video class="embed-responsive-item" controls>
-                            <source src="~/images/OIC_video.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
+            <h3 style="font-weight:800;letter-spacing:-.03em;margin-bottom:.875rem">
+              Expert Q&amp;A Panel Discussions for College Success
+            </h3>
+            <p style="font-size:.92rem;color:var(--text-muted);max-width:620px;margin:0 auto 1.5rem;line-height:1.75">
+              We're thrilled to offer a unique opportunity to participate in our upcoming Q&amp;A panel discussions,
+              tailored specifically for students and parents navigating the college selection process.
+            </p>
+            <div class="alert alert-warning d-inline-block mb-0" style="font-size:.875rem">
+              <i class="fas fa-info-circle mr-2"></i>
+              <strong>March 31st event completed</strong> — Stay tuned for our next panel!
             </div>
+          </div>
         </div>
+
+        <!-- Panelists & gains -->
+        <div class="row mb-5">
+          <div class="col-md-6 mb-4 animate-up">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="feature-icon" style="width:52px;height:52px;font-size:1.3rem;margin-bottom:1rem">
+                  <i class="fas fa-user-graduate"></i>
+                </div>
+                <h5 style="font-weight:700;margin-bottom:1rem">Meet Our Panelists</h5>
+                <ul class="list-unstyled" style="font-size:.875rem;color:var(--text-muted)">
+                  @foreach (var item in new[] {
+                    "Degrees from Ivy League and top-tier institutions",
+                    "Yale, Stanford, Wesleyan alumni",
+                    "MIT, University of Pennsylvania graduates",
+                    "Villanova and other prestigious schools"
+                  })
+                  {
+                    <li style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.625rem">
+                      <i class="fas fa-check-circle" style="color:var(--accent);margin-top:.15rem;flex-shrink:0"></i>
+                      @item
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4 animate-up">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="feature-icon" style="width:52px;height:52px;font-size:1.3rem;margin-bottom:1rem">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+                <h5 style="font-weight:700;margin-bottom:1rem">What You'll Gain</h5>
+                <ul class="list-unstyled" style="font-size:.875rem;color:var(--text-muted)">
+                  @foreach (var item in new[] {
+                    "Expertise in college interviews",
+                    "Admissions strategy insights",
+                    "Answers to your pressing questions",
+                    "Firsthand experiences from successful applicants"
+                  })
+                  {
+                    <li style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.625rem">
+                      <i class="fas fa-star" style="color:var(--warning-c);margin-top:.15rem;flex-shrink:0"></i>
+                      @item
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo gallery -->
+        <div class="mb-5">
+          <h3 style="font-weight:800;letter-spacing:-.03em;text-align:center;margin-bottom:1.5rem">
+            Student Campus Experience
+          </h3>
+          <div class="row">
+            @foreach (var (src, caption) in new[] {
+              ("~/images/Event4.jpeg", "Students bonding during the HBCU tour experience."),
+              ("~/images/Event5.jpeg", "Campus stop at Bennett College — learning and fun combined."),
+              ("~/images/Event1.jpeg", "Group photo at Morris Brown College — unity in purpose."),
+              ("~/images/Event2.jpeg", "Tour guide explaining student life on a vibrant HBCU campus.")
+            })
+            {
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card gallery-card h-100">
+                  <div style="overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0;height:200px">
+                    <img src="@src" class="card-img-top"
+                         style="width:100%;height:100%;object-fit:cover"
+                         alt="Event photo">
+                  </div>
+                  <div class="card-body" style="padding:1rem!important">
+                    <p style="font-size:.8rem;color:var(--text-muted);margin:0;line-height:1.55">@caption</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Video -->
+        <div class="card animate-up">
+          <div class="card-body text-center" style="padding:2rem!important">
+            <h4 style="font-weight:800;letter-spacing:-.03em;margin-bottom:1.25rem">
+              <i class="fas fa-play-circle mr-2" style="color:var(--primary)"></i>
+              Watch Highlights From Our Last Event
+            </h4>
+            <div style="border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-lg)">
+              <video controls style="width:100%;max-height:420px;background:#000">
+                <source src="~/images/OIC_video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 </section>

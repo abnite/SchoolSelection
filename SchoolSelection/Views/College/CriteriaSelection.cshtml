@@ -167,7 +167,7 @@
                   <i class="fas fa-arrow-left mr-1"></i> Back
                 </a>
                 <button type="submit" class="btn btn-success"
-                        @(remainingCriteria <= 0 ? "disabled" : "")>
+                        @(remainingCriteria <= 0 && Model?.Id == null ? "disabled" : "")>
                   <i class="fas fa-@(Model?.Id == null ? "plus" : "save") mr-1"></i>
                   @(Model?.Id == null ? "Add Criteria" : "Update Criteria")
                 </button>

@@ -25,9 +25,11 @@ public class AccountController : Controller
     private readonly IConfiguration _configuration;
     private readonly IEmailSender _emailService;
     private readonly CollegeDbContext _context;
-    
-    public AccountController(CollegeDbContext context,IEmailSender emailService,UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> SignInManager,
-        RoleManager<ApplicationRole> RoleManager, CollegeDbContext Db,IConfiguration configuration)
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public AccountController(CollegeDbContext context, IEmailSender emailService, UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> SignInManager, RoleManager<ApplicationRole> RoleManager,
+        CollegeDbContext Db, IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
         this.SignInManager = SignInManager;
         this.RoleManager = RoleManager;
@@ -36,7 +38,23 @@ public class AccountController : Controller
         _configuration = configuration;
         _emailService = emailService;
         _context = context;
+        _httpClientFactory = httpClientFactory;
+    }
 
+    private async Task<bool> VerifyRecaptchaAsync(string token)
+    {
+        var secretKey = _configuration["RecaptchaSettings:SecretKey"];
+        if (string.IsNullOrWhiteSpace(secretKey) || string.IsNullOrWhiteSpace(token)) return false;
+        var client = _httpClientFactory.CreateClient();
+        var response = await client.PostAsync(
+            "https://www.google.com/recaptcha/api/siteverify",
+            new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["secret"]   = secretKey,
+                ["response"] = token
+            }));
+        var json = await response.Content.ReadAsStringAsync();
+        return json.Contains("\"success\": true") || json.Contains("\"success\":true");
     }
     [Authorize (Roles = "Admin")]
     public IActionResult Index()
@@ -248,6 +266,7 @@ public class AccountController : Controller
 
     public IActionResult Register()
     {
+        ViewBag.RecaptchaSiteKey = _configuration["RecaptchaSettings:SiteKey"];
         return View();
     }
 
@@ -255,6 +274,16 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        ViewBag.RecaptchaSiteKey = _configuration["RecaptchaSettings:SiteKey"];
+
+        // Verify reCAPTCHA
+        var recaptchaToken = Request.Form["g-recaptcha-response"].ToString();
+        if (!await VerifyRecaptchaAsync(recaptchaToken))
+        {
+            ViewBag.Error = "Please complete the CAPTCHA verification to continue.";
+            return View(model);
+        }
+
         if (ModelState.IsValid)
         {
             // Create a new user

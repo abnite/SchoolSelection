@@ -1,376 +1,644 @@
-﻿<!DOCTYPE html><!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decide Confidently <sup>TM</sup> - College Selection Portal</title>
-    <link rel="icon" href="~/images/schoolselection.jpeg" type="image/png">
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #27ae60;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decide Confidently &trade; &ndash; College Selection Portal</title>
+  <link rel="icon" href="~/images/schoolselection.jpeg" type="image/png">
 
-        /* anywhere after the Bootstrap link */
-        .blockquote-footer {
-            color: #ffffff !important;  /* Bootstrap’s “muted” gray */
-        }
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <!-- Bootstrap 4.5 -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- Select2 -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: var(--dark);
-            line-height: 1.6;
-        }
+  <style>
+    /* ── Design tokens ────────────────────────────────────── */
+    :root {
+      --primary:        #4361ee;
+      --primary-dark:   #3a56d4;
+      --primary-light:  #eef0fd;
+      --accent:         #06d6a0;
+      --warning-c:      #ff9f1c;
+      --danger-c:       #ef233c;
+      --dark:           #1a1f36;
+      --text:           #1a1f36;
+      --text-muted:     #6b7280;
+      --text-light:     #9ca3af;
+      --surface:        #ffffff;
+      --surface-2:      #f7f8fc;
+      --bg:             #f0f2f8;
+      --border:         #e2e6f0;
+      --r:              12px;
+      --r-sm:           8px;
+      --r-lg:           16px;
+      --r-xl:           24px;
+      --shadow-sm:      0 1px 3px rgba(0,0,0,.08);
+      --shadow:         0 4px 16px rgba(67,97,238,.12), 0 1px 3px rgba(0,0,0,.06);
+      --shadow-lg:      0 10px 40px rgba(67,97,238,.18), 0 2px 6px rgba(0,0,0,.06);
+      --t:              0.2s ease;
+    }
 
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 4rem 0;
-            position: relative;
-            overflow: hidden;
-        }
+    /* ── Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: 15px; }
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { color: var(--primary-dark); }
 
-        .hero-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.15;
-            z-index: 0;
-        }
+    /* ── Navbar ───────────────────────────────────────────── */
+    .public-nav {
+      background: var(--surface) !important;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: .625rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .public-nav .navbar-brand {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--primary) !important;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      letter-spacing: -.03em;
+    }
+    .public-nav .navbar-brand img {
+      border-radius: var(--r-sm);
+      width: 36px; height: 36px; object-fit: cover;
+    }
+    .public-nav .nav-link {
+      font-weight: 600;
+      font-size: .85rem;
+      color: var(--text-muted) !important;
+      padding: .375rem .75rem !important;
+      border-radius: var(--r-sm);
+      transition: all var(--t);
+    }
+    .public-nav .nav-link:hover {
+      color: var(--primary) !important;
+      background: var(--primary-light);
+    }
+    .public-nav .btn-nav-register {
+      background: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary) !important;
+      font-weight: 700;
+      font-size: .82rem;
+      border-radius: var(--r-sm);
+      padding: .375rem 1rem;
+      transition: all var(--t);
+    }
+    .public-nav .btn-nav-register:hover {
+      background: var(--primary-light);
+    }
+    .public-nav .btn-nav-login {
+      background: linear-gradient(135deg, var(--primary), #7b2ff7);
+      color: #fff !important;
+      font-weight: 700;
+      font-size: .82rem;
+      border-radius: var(--r-sm);
+      padding: .375rem 1rem;
+      border: none;
+      transition: all var(--t);
+      box-shadow: 0 3px 10px rgba(67,97,238,.3);
+    }
+    .public-nav .btn-nav-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 16px rgba(67,97,238,.4);
+    }
 
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
+    /* ── Hero ─────────────────────────────────────────────── */
+    .hero-section {
+      background: linear-gradient(135deg, #1a1f36 0%, var(--primary) 50%, #7b2ff7 100%);
+      color: #fff;
+      padding: 4.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(6,214,160,.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(123,47,247,.15) 0%, transparent 50%);
+    }
+    .hero-video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.08;
+      z-index: 0;
+    }
+    .hero-content { position: relative; z-index: 1; }
 
-        .register-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    /* ── Page hero (inner pages) ──────────────────────────── */
+    .page-hero {
+      background: linear-gradient(135deg, #1a1f36 0%, var(--primary) 100%);
+      color: #fff;
+      padding: 3.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .page-hero h1 { font-weight: 800; letter-spacing: -.04em; }
 
-        .register-card {
-            padding: 2rem;
-        }
+    /* ── Cards ────────────────────────────────────────────── */
+    .card {
+      border: 1px solid var(--border) !important;
+      border-radius: var(--r-lg) !important;
+      box-shadow: var(--shadow) !important;
+      background: var(--surface) !important;
+      transition: all var(--t);
+    }
+    .card:hover { box-shadow: var(--shadow-lg) !important; transform: translateY(-3px); }
+    .card-body { padding: 1.75rem !important; }
+    .card-footer { padding: 1rem 1.75rem !important; border-top: 1px solid var(--border) !important; }
 
-        .login-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+    /* ── Feature icon card ────────────────────────────────── */
+    .feature-icon {
+      width: 64px; height: 64px;
+      border-radius: var(--r);
+      background: var(--primary-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      color: var(--primary);
+      margin: 0 auto 1.25rem;
+      transition: all var(--t);
+    }
+    .card:hover .feature-icon {
+      background: linear-gradient(135deg, var(--primary), #7b2ff7);
+      color: #fff;
+    }
 
-        .login-card {
-            padding: 2rem;
-        }
-        .form-control-lg {
-            height: calc(2.5em + 1rem + 2px);
-            padding: 0.5rem 1rem;
-            font-size: 1.1rem;
-        }
+    /* ── Buttons ──────────────────────────────────────────── */
+    .btn {
+      font-weight: 600;
+      font-size: .875rem;
+      border-radius: var(--r-sm) !important;
+      transition: all var(--t);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #7b2ff7) !important;
+      border: none !important;
+      color: #fff !important;
+      box-shadow: 0 4px 12px rgba(67,97,238,.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(67,97,238,.45) !important;
+      color: #fff !important;
+    }
+    .btn-success {
+      background: linear-gradient(135deg, var(--accent), #059669) !important;
+      border: none !important;
+      color: #fff !important;
+    }
+    .btn-success:hover { transform: translateY(-1px); color: #fff !important; }
+    .btn-outline-primary {
+      border: 1.5px solid var(--primary) !important;
+      color: var(--primary) !important;
+      background: transparent !important;
+    }
+    .btn-outline-primary:hover {
+      background: var(--primary-light) !important;
+    }
+    .btn-outline-light {
+      border: 1.5px solid rgba(255,255,255,.5) !important;
+      color: #fff !important;
+      background: rgba(255,255,255,.1) !important;
+    }
+    .btn-outline-light:hover {
+      background: rgba(255,255,255,.2) !important;
+    }
+    .btn-lg { padding: .75rem 2rem !important; font-size: 1rem !important; }
 
-        .select2-container--default .select2-selection--single {
-            height: calc(2.5em + 1rem + 2px);
-            padding: 0.5rem 1rem;
-            font-size: 1.1rem;
-            border: 1px solid #ced4da;
-        }
+    /* ── Forms ────────────────────────────────────────────── */
+    .form-control {
+      border: 1.5px solid var(--border) !important;
+      border-radius: var(--r-sm) !important;
+      font-size: .9rem !important;
+      color: var(--text) !important;
+      background: var(--surface) !important;
+      transition: border-color var(--t), box-shadow var(--t);
+      padding: .55rem .875rem !important;
+    }
+    .form-control:focus {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 3px rgba(67,97,238,.15) !important;
+      outline: none !important;
+    }
+    .form-control-lg { padding: .7rem 1rem !important; font-size: .95rem !important; }
+    label {
+      font-weight: 600;
+      font-size: .78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .3rem;
+    }
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: calc(2.5em + 1rem + 2px);
-        }
+    /* ── Auth cards ───────────────────────────────────────── */
+    .auth-card {
+      background: var(--surface);
+      border-radius: var(--r-xl) !important;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15) !important;
+      overflow: hidden;
+      border: none !important;
+    }
+    .auth-card .card-body { padding: 2.25rem 2rem !important; }
 
-        .features-section {
-            padding: 4rem 0;
-            background-color: white;
-        }
+    /* ── Alerts ───────────────────────────────────────────── */
+    .alert {
+      border: none;
+      border-radius: var(--r);
+      font-weight: 500;
+      font-size: .875rem;
+    }
+    .alert-danger {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #991b1b;
+      border-left: 4px solid var(--danger-c);
+    }
+    .alert-success {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+      border-left: 4px solid var(--accent);
+    }
+    .alert-info {
+      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+      color: #0c4a6e;
+      border-left: 4px solid #4cc9f0;
+    }
+    .alert-warning {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+      border-left: 4px solid var(--warning-c);
+    }
 
-        .feature-card {
-            border: none;
-            border-radius: 8px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
-        }
+    /* ── Stats section ────────────────────────────────────── */
+    .stats-section {
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3561 100%);
+      padding: 3.5rem 0;
+      color: #fff;
+    }
+    .stat-number {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,.7));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: .875rem; color: rgba(255,255,255,.65); font-weight: 500; margin-top: .25rem; }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
+    /* ── Section titles ───────────────────────────────────── */
+    .section-title {
+      font-weight: 800;
+      letter-spacing: -.03em;
+      color: var(--text);
+      font-size: 1.75rem;
+    }
+    .section-subtitle { color: var(--text-muted); font-size: .95rem; }
 
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
+    /* ── Testimonials ─────────────────────────────────────── */
+    .testimonial-card {
+      border: 1px solid var(--border) !important;
+      border-radius: var(--r-lg) !important;
+      background: var(--surface) !important;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .testimonial-card::before {
+      content: '\201C';
+      font-size: 4rem;
+      color: var(--primary);
+      opacity: .15;
+      position: absolute;
+      top: .5rem;
+      left: 1rem;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+    .blockquote { font-size: .9rem; line-height: 1.7; }
+    .blockquote-footer { color: var(--text-muted) !important; font-size: .78rem; font-weight: 600; margin-top: .5rem; }
+    .blockquote-footer::before { content: '— '; }
 
-        .stats-section {
-            background-color: var(--light);
-            padding: 3rem 0;
-        }
+    /* ── Gallery ──────────────────────────────────────────── */
+    .gallery-card img {
+      transition: transform .4s ease;
+    }
+    .gallery-card:hover img { transform: scale(1.04); }
+    .gallery-card { overflow: hidden; }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--secondary);
-        }
+    /* ── CTA section ──────────────────────────────────────── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary), #7b2ff7);
+      color: #fff;
+      padding: 4rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      right: -80px; bottom: -80px;
+      width: 350px; height: 350px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
 
-        .btn-primary {
-            background-color: var(--secondary);
-            border-color: var(--secondary);
-        }
+    /* ── Footer ───────────────────────────────────────────── */
+    .public-footer {
+      background: var(--dark);
+      color: rgba(255,255,255,.75);
+      padding: 3rem 0 1.5rem;
+    }
+    .public-footer h5 { color: #fff; font-weight: 700; font-size: .9rem; margin-bottom: 1rem; }
+    .public-footer a { color: rgba(255,255,255,.65); font-size: .875rem; transition: color var(--t); }
+    .public-footer a:hover { color: #fff; }
+    .public-footer .footer-divider { border-color: rgba(255,255,255,.1); margin: 1.5rem 0 1rem; }
+    .public-footer .footer-bottom { font-size: .8rem; color: rgba(255,255,255,.45); }
+    .footer-social a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.7) !important;
+      margin-right: .4rem;
+      transition: all var(--t);
+      font-size: .85rem;
+    }
+    .footer-social a:hover { background: var(--primary); color: #fff !important; }
 
-        .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-        }
+    /* ── Select2 ──────────────────────────────────────────── */
+    .select2-container--default .select2-selection--single {
+      border: 1.5px solid var(--border) !important;
+      border-radius: var(--r-sm) !important;
+      min-height: 42px !important;
+      padding: .4rem .75rem !important;
+      font-size: .9rem !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 42px !important;
+    }
 
-        .btn-outline-primary {
-            color: var(--secondary);
-            border-color: var(--secondary);
-        }
+    /* ── Animations ───────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-up { animation: fadeUp .5s ease both; }
+    .animate-up:nth-child(1) { animation-delay: .05s; }
+    .animate-up:nth-child(2) { animation-delay: .12s; }
+    .animate-up:nth-child(3) { animation-delay: .19s; }
 
-        .btn-outline-primary:hover {
-            background-color: var(--secondary);
-            color: white;
-        }
-
-        .nav-link {
-            color: var(--dark);
-            font-weight: 500;
-        }
-
-        .nav-link:hover {
-            color: var(--secondary);
-        }
-
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 2rem 0;
-        }
-
-        @@media (max-width: 768px) {
-            .hero-section {
-                padding: 2rem 0;
-            }
-
-            .login-container {
-                margin-top: 2rem;
-            }
-        }
-
-        .testimonial-card {
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            background-color: #fff;
-            border: 1px solid #eaeaea;
-        }
-    </style>
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hero-section { padding: 3rem 0; }
+      .section-title { font-size: 1.4rem; }
+      .stat-number { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand font-weight-bold" href="#" style="color: var(--secondary);">
-            <img src="~/images/schoolselection.jpeg" alt="Logo" height="40" class="mr-2">
-            Decide Confidently
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="College" asp-action="Index">College Selection Tool</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Events">Events</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="About_Us">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="community" asp-controller="Account">Community</a>
-                </li>
-                <li class="nav-item ml-lg-3">
-                    <a class="btn btn-outline-primary" href="/Account/Register">Register</a>
-                </li>
-                <li class="nav-item ml-lg-2">
-                    <a class="btn btn-primary" href="/Account/Login">Login</a>
-                </li>
-            </ul>
-        </div>
+
+<!-- ── Navigation ───────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg public-nav">
+  <div class="container">
+    <a class="navbar-brand" href="/Account/Login">
+      <img src="~/images/schoolselection.jpeg" alt="Logo">
+      Decide Confidently
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="College" asp-action="Index">
+            <i class="fas fa-university mr-1" style="font-size:.75rem;opacity:.7"></i> Tool
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Account" asp-action="Events">Events</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Account" asp-action="About_Us">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Account" asp-action="community">Community</a>
+        </li>
+        <li class="nav-item ml-lg-2">
+          <a class="btn-nav-register" href="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item ml-lg-2">
+          <a class="btn-nav-login" href="/Account/Login">Login</a>
+        </li>
+      </ul>
     </div>
+  </div>
 </nav>
+
+<!-- ── Flash messages ───────────────────────────────────────── -->
 <section class="content-header">
-    @{
-        if (TempData["Message"] != null)
-        {
-            <div class="alert alert-success alert-dismissible" id="DIVHide" style="margin:10px">
-                <button class="close" aria-hidden="true" type="button" data-dismiss="alert">×</button>
-                <Center><i class="icon fa fa-check"></i>   @TempData["Message"]</Center>
-
-            </div>
-        }
-        if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger alert-dismissible" id="DIVHide" style="margin:10px">
-                <button class="close" aria-hidden="true" type="button" data-dismiss="alert">×</button>
-                <Center><i class="icon fa fa-check"></i>   @TempData["ErrorMessage"]</Center>
-
-            </div>
-        }
+  @{
+    if (TempData["Message"] != null)
+    {
+      <div class="alert alert-success alert-dismissible" id="DIVHide" style="margin:.75rem 1.5rem;border-radius:var(--r)">
+        <button class="close" type="button" data-dismiss="alert" style="font-size:.9rem">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i> @TempData["Message"]
+      </div>
     }
+    if (TempData["ErrorMessage"] != null)
+    {
+      <div class="alert alert-danger alert-dismissible" id="DIVHide" style="margin:.75rem 1.5rem;border-radius:var(--r)">
+        <button class="close" type="button" data-dismiss="alert" style="font-size:.9rem">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i> @TempData["ErrorMessage"]
+      </div>
+    }
+  }
 </section>
 
 @RenderBody()
-   <!-- Stats Section -->
+
+<!-- ── Stats bar ─────────────────────────────────────────────── -->
 <section class="stats-section">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="stat-number">1.2M+</div>
-                <p class="lead">Users submitted college apps</p>
-            </div>
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="stat-number">95+%</div>
-                <p class="lead">satisfaction with using our pre-college consulting service</p>
-            </div>
-           <!-- <div class="col-md-3 mb-4 mb-md-0">
-                <div class="stat-number">5%</div>
-                <p class="lead">Transferred (not satisfied)</p>
-            </div>-->
-            <div class="col-md-4">
-                <div class="stat-number">2025</div>
-                <p class="lead">Metrics updated for current year</p>
-            </div>
-        </div>
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="stat-number">1.2M+</div>
+        <div class="stat-label">Users submitted college applications</div>
+      </div>
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="stat-number">95%+</div>
+        <div class="stat-label">Satisfaction with our pre-college consulting</div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-number">2025</div>
+        <div class="stat-label">Metrics updated for the current year</div>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- Features Section -->
-<section class="features-section" id="features">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="font-weight-bold">Unlock Your College Potential</h2>
-            <p class="lead">Level up with our community-powered tools and resources</p>
-        </div>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <a asp-action="Index" asp-controller="College" style="color: black">
-                    <div class="card feature-card">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <h4>College Selection Tool</h4>
-                            <p>Our AI-powered tool matches you with the perfect colleges based on your criteria and goals.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a asp-action="Events" asp-controller="Account" style="color: black">
-                    <div class="card feature-card">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <h4>Events & Panels</h4>
-                            <p>Join our in-person or virtual events with admissions experts and current students.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-4">
-                <a asp-action="community" asp-controller="Account" style="color: black">
-                    <div class="card feature-card">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h4>Community Support</h4>
-                            <p>Connect with peers and mentors who can help guide your college decision process.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+<!-- ── Features section ──────────────────────────────────────── -->
+<section style="padding:4rem 0;background:var(--surface)">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Unlock Your College Potential</h2>
+      <p class="section-subtitle mt-2">Level up with community-powered tools and AI-driven resources</p>
     </div>
+    <div class="row">
+      <div class="col-md-4 mb-4 animate-up">
+        <a asp-action="Index" asp-controller="College" style="color:inherit">
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="feature-icon"><i class="fas fa-university"></i></div>
+              <h5 style="font-weight:700;margin-bottom:.5rem">College Selection Tool</h5>
+              <p style="font-size:.875rem;color:var(--text-muted);margin:0">
+                Our AI-powered tool matches you with the perfect colleges based on your criteria and goals.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4 mb-4 animate-up">
+        <a asp-action="Events" asp-controller="Account" style="color:inherit">
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+              <h5 style="font-weight:700;margin-bottom:.5rem">Events &amp; Expert Panels</h5>
+              <p style="font-size:.875rem;color:var(--text-muted);margin:0">
+                Join in-person or virtual events with admissions experts and current students.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4 mb-4 animate-up">
+        <a asp-action="community" asp-controller="Account" style="color:inherit">
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="feature-icon"><i class="fas fa-users"></i></div>
+              <h5 style="font-weight:700;margin-bottom:.5rem">Community Support</h5>
+              <p style="font-size:.875rem;color:var(--text-muted);margin:0">
+                Connect with peers and mentors who help guide your college decision process.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- Call to Action -->
-<section class="py-5 bg-light">
-    <div class="container text-center">
-        <h2 class="font-weight-bold mb-4">Become Part of Our #1 Community</h2>
-        <p class="lead mb-4">Join thousands of students making confident college decisions</p>
-        <a href="/Account/Register" class="btn btn-primary btn-lg px-5 py-3">Get Started Now</a>
-    </div>
+<!-- ── CTA ───────────────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="container text-center" style="position:relative;z-index:1">
+    <h2 style="font-weight:800;font-size:1.75rem;letter-spacing:-.03em;margin-bottom:.75rem">
+      Become Part of Our #1 Community
+    </h2>
+    <p style="font-size:.95rem;opacity:.85;margin-bottom:1.75rem">
+      Join thousands of students making confident college decisions
+    </p>
+    <a href="/Account/Register" class="btn btn-lg" style="background:#fff;color:var(--primary);font-weight:700;border-radius:var(--r-sm);box-shadow:0 6px 24px rgba(0,0,0,.2)">
+      <i class="fas fa-rocket mr-2"></i> Get Started Free
+    </a>
+  </div>
 </section>
 
-<!-- Footer -->
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 mb-4 mb-lg-0">
-                <h5>Decide Confidently</h5>
-                <p>Helping students make the best college decisions since 2015.</p>
-            </div>
-            <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                <h5>Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a asp-action="Index" asp-controller="College" class="text-white">College Selection Tool</a></li>
-                    <li><a asp-action="About_Us" class="text-white">About Us</a></li>
-                    <li><a class="text-white" asp-action="Terms_Conditions">Terms & Condition</a></li>
-                    <li><a class="text-white" asp-action="Privacy_Policy">Privacy Policy</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5>Connect</h5>
-                <ul class="list-unstyled">
-                    <li><a href="https://www.facebook.com/profile.php?id=100066758075620" class="text-white"><i class="fab fa-facebook-f mr-2"></i> Facebook</a></li>
-                   <!-- <li><a href="https://www.facebook.com/profile.php?id=100066758075620" class="text-white"><i class="fab fa-twitter mr-2"></i> Twitter</a></li>-->
-                    <li><a href="https://instagram.com/froootpizza/" class="text-white"><i class="fab fa-instagram mr-2"></i> Instagram</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3">
-                <h5>Contact Us</h5>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-envelope mr-2"></i> decideconfidently@froootpizza.com</li>
-                   <!-- <li><i class="fas fa-phone mr-2"></i> (555) 123-4567</li>-->
-                </ul>
-            </div>
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer class="public-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <h5>Decide Confidently &trade;</h5>
+        <p style="font-size:.875rem;line-height:1.65">
+          Helping students make the best college decisions since 2015. Your journey to the right college starts here.
+        </p>
+        <div class="footer-social mt-3">
+          <a href="https://www.facebook.com/profile.php?id=100066758075620" target="_blank">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://instagram.com/froootpizza/" target="_blank">
+            <i class="fab fa-instagram"></i>
+          </a>
         </div>
-        <hr class="bg-white my-4">
-        <div class="text-center">
-            <p class="mb-0">&copy; @DateTime.Now.Year Decide Confidently. All rights reserved.</p>
+      </div>
+      <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled" style="line-height:2">
+          <li><a asp-action="Index" asp-controller="College">College Tool</a></li>
+          <li><a asp-action="Events" asp-controller="Account">Events</a></li>
+          <li><a asp-action="About_Us" asp-controller="Account">About Us</a></li>
+          <li><a asp-action="community" asp-controller="Account">Community</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+        <h5>Legal</h5>
+        <ul class="list-unstyled" style="line-height:2">
+          <li><a asp-action="Terms_Conditions" asp-controller="Account">Terms &amp; Conditions</a></li>
+          <li><a asp-action="Privacy_Policy" asp-controller="Account">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3">
+        <h5>Contact</h5>
+        <ul class="list-unstyled" style="line-height:2;font-size:.875rem">
+          <li>
+            <a href="mailto:decideconfidently@froootpizza.com">
+              <i class="fas fa-envelope mr-2" style="color:var(--primary);opacity:.8"></i>
+              decideconfidently@froootpizza.com
+            </a>
+          </li>
+        </ul>
+        <div class="mt-3">
+          <a href="/Account/Register" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus mr-1"></i> Register Now
+          </a>
         </div>
+      </div>
     </div>
+    <hr class="footer-divider">
+    <div class="text-center footer-bottom">
+      &copy; @DateTime.Now.Year Decide Confidently &trade;. All rights reserved.
+    </div>
+  </div>
 </footer>
 
-<!-- Bootstrap JS and dependencies -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+<script>
+  // Auto-dismiss flash messages
+  setTimeout(() => $('#DIVHide').fadeOut('slow'), 6000);
+</script>
+@RenderSection("Scripts", required: false)
 </body>
 </html>
