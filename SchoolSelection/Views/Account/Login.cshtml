@@ -1,65 +1,190 @@
 @model LoginViewModel
 @{
     Layout = "_LoginLayout";
+    ViewBag.Title = "Login — Decide Confidently";
 }
 
-<!-- Hero Section -->
+<!-- ── Hero ──────────────────────────────────────────────────── -->
 <section class="hero-section" id="home">
-    <video autoplay muted loop class="hero-video">
-        <source src="https://example.com/college-campus.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    <div class="container hero-content">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 font-weight-bold mb-4">Decide Confidently on Your College Selection</h1>
-                <p class="lead mb-4">Your colleges and criteria, combined with our process, community, and AI-powered tools to help you make the best decision.</p>
-                <div class="d-flex flex-wrap">
-                    <a href="#login" class="btn btn-primary btn-lg px-4 py-2 mr-3 mb-3">Login to Get Started</a>
-                    <a href="/Account/Register" class="btn btn-outline-light btn-lg px-4 py-2 mb-3">Create Account</a>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="login-container">
-                    <div class="login-card">
-                        <div class="text-center mb-4">
-                            <img src="~/images/schoolselection.jpeg" alt="Login Image" height="80" class="mb-3">
-                            <h3>User Login</h3>
-                        </div>
+  <div class="container hero-content">
+    <div class="row align-items-center" style="gap:2rem 0">
 
-                        @if (ViewBag.Error != null)
-                        {
-                            <div class="alert alert-danger">@ViewBag.Error</div>
-                        }
-
-                        <form asp-action="Login" method="post" asp-controller="Account">
-                            <div class="form-group">
-                                <label for="email">Email Address</label>
-                                <input type="email" asp-for="Email" class="form-control form-control-lg" placeholder="example@gmail.com" required>
-                                <span asp-validation-for="Email" class="text-danger small"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <input type="password" asp-for="Password" class="form-control form-control-lg" placeholder="******" required>
-                                <span asp-validation-for="Password" class="text-danger small"></span>
-                            </div>
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" id="remember">
-                                <label class="form-check-label" for="remember">Remember me</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
-                            <div class="text-center mt-3">
-                                <a href="/Account/passwordRecovery" class="text-muted">Forgot Password?</a>
-                            </div>
-                            <div class="text-center mt-3">
-                                <span class="text-muted">Don't have an account? </span>
-                                <a href="/Account/Register">Register</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+      <!-- Left: headline -->
+      <div class="col-lg-6">
+        <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.7;margin-bottom:.625rem">
+          AI-Powered College Planning
+        </p>
+        <h1 class="display-4 font-weight-bold mb-4" style="line-height:1.12;letter-spacing:-.04em">
+          Decide Confidently<br>on Your College Selection
+        </h1>
+        <p class="lead mb-4" style="opacity:.85;max-width:480px">
+          Your colleges and criteria, combined with our process, community,
+          and AI-powered tools to help you make the best decision.
+        </p>
+        <div class="d-flex flex-wrap" style="gap:.75rem">
+          <a href="#loginCard" class="btn btn-lg"
+             style="background:#fff;color:var(--primary);font-weight:700;border-radius:var(--r-sm);box-shadow:0 6px 24px rgba(0,0,0,.2)">
+            <i class="fas fa-sign-in-alt mr-2"></i> Login to Get Started
+          </a>
+          <a href="/Account/Register" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-user-plus mr-2"></i> Create Free Account
+          </a>
         </div>
+      </div>
+
+      <!-- Right: login card -->
+      <div class="col-lg-6" id="loginCard">
+        <div class="auth-card card" style="max-width:420px;margin:0 auto">
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <img src="~/images/schoolselection.jpeg" alt="Logo"
+                   style="width:60px;height:60px;border-radius:12px;object-fit:cover;margin-bottom:.75rem;box-shadow:0 4px 16px rgba(0,0,0,.18)">
+              <h4 style="font-weight:800;letter-spacing:-.03em;margin:0;color:var(--text)">Welcome Back</h4>
+              <p style="font-size:.875rem;color:var(--text-muted);margin-top:.25rem">Sign in to your account</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+              <div class="alert alert-danger mb-3">
+                <i class="fas fa-exclamation-circle mr-2"></i>@ViewBag.Error
+              </div>
+            }
+
+            <form asp-action="Login" method="post" asp-controller="Account">
+              <div class="form-group mb-3">
+                <label>Email Address</label>
+                <div style="position:relative">
+                  <i class="fas fa-envelope" style="position:absolute;left:.875rem;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:.85rem;pointer-events:none"></i>
+                  <input type="email" asp-for="Email" class="form-control form-control-lg"
+                         placeholder="you@example.com" required
+                         style="padding-left:2.5rem!important">
+                </div>
+                <span asp-validation-for="Email" class="text-danger" style="font-size:.78rem"></span>
+              </div>
+
+              <div class="form-group mb-3">
+                <label>Password</label>
+                <div style="position:relative">
+                  <i class="fas fa-lock" style="position:absolute;left:.875rem;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:.85rem;pointer-events:none"></i>
+                  <input type="password" asp-for="Password" class="form-control form-control-lg"
+                         placeholder="••••••••" required
+                         style="padding-left:2.5rem!important">
+                </div>
+                <span asp-validation-for="Password" class="text-danger" style="font-size:.78rem"></span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check" style="margin:0">
+                  <input type="checkbox" class="form-check-input" asp-for="RememberMe" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe"
+                         style="font-size:.875rem;font-weight:500;color:var(--text-muted);text-transform:none;letter-spacing:0">
+                    Remember me
+                  </label>
+                </div>
+                <a href="/Account/passwordRecovery"
+                   style="font-size:.875rem;font-weight:600;color:var(--primary)">Forgot password?</a>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg mb-3">
+                <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+              </button>
+
+              <p style="text-align:center;font-size:.875rem;color:var(--text-muted);margin:0">
+                No account yet?
+                <a href="/Account/Register" style="font-weight:700;color:var(--primary)">Create one free</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 </section>
 
+<!-- ── Stats bar ─────────────────────────────────────────────── -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="stat-number">1.2M+</div>
+        <div class="stat-label">Users submitted college applications</div>
+      </div>
+      <div class="col-md-4 mb-4 mb-md-0">
+        <div class="stat-number">95%+</div>
+        <div class="stat-label">Satisfaction with our pre-college consulting</div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-number">@DateTime.Now.Year</div>
+        <div class="stat-label">Metrics updated for the current year</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features section ──────────────────────────────────────── -->
+<section style="padding:4rem 0;background:var(--surface)">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Unlock Your College Potential</h2>
+      <p class="section-subtitle mt-2">Level up with community-powered tools and AI-driven resources</p>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-4 animate-up">
+        <a asp-action="Index" asp-controller="College" style="color:inherit;text-decoration:none">
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="feature-icon"><i class="fas fa-university"></i></div>
+              <h5 style="font-weight:700;margin-bottom:.5rem">College Selection Tool</h5>
+              <p style="font-size:.875rem;color:var(--text-muted);margin:0">
+                Our AI-powered tool matches you with the perfect colleges based on your criteria and goals.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4 mb-4 animate-up">
+        <a asp-action="Events" asp-controller="Account" style="color:inherit;text-decoration:none">
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+              <h5 style="font-weight:700;margin-bottom:.5rem">Events &amp; Expert Panels</h5>
+              <p style="font-size:.875rem;color:var(--text-muted);margin:0">
+                Join in-person or virtual events with admissions experts and current students.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4 mb-4 animate-up">
+        <a asp-action="community" asp-controller="Account" style="color:inherit;text-decoration:none">
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="feature-icon"><i class="fas fa-users"></i></div>
+              <h5 style="font-weight:700;margin-bottom:.5rem">Community Support</h5>
+              <p style="font-size:.875rem;color:var(--text-muted);margin:0">
+                Connect with peers and mentors who help guide your college decision process.
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="container text-center" style="position:relative;z-index:1">
+    <h2 style="font-weight:800;font-size:1.75rem;letter-spacing:-.03em;margin-bottom:.75rem">
+      Become Part of Our #1 Community
+    </h2>
+    <p style="font-size:.95rem;opacity:.85;margin-bottom:1.75rem">
+      Join thousands of students making confident college decisions
+    </p>
+    <a href="/Account/Register" class="btn btn-lg"
+       style="background:#fff;color:var(--primary);font-weight:700;border-radius:var(--r-sm);box-shadow:0 6px 24px rgba(0,0,0,.2)">
+      <i class="fas fa-rocket mr-2"></i> Get Started Free
+    </a>
+  </div>
+</section>

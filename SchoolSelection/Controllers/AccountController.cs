@@ -45,16 +45,26 @@ public class AccountController : Controller
     {
         var secretKey = _configuration["RecaptchaSettings:SecretKey"];
         if (string.IsNullOrWhiteSpace(secretKey) || string.IsNullOrWhiteSpace(token)) return false;
-        var client = _httpClientFactory.CreateClient();
-        var response = await client.PostAsync(
-            "https://www.google.com/recaptcha/api/siteverify",
-            new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["secret"]   = secretKey,
-                ["response"] = token
-            }));
-        var json = await response.Content.ReadAsStringAsync();
-        return json.Contains("\"success\": true") || json.Contains("\"success\":true");
+        try
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
+            var response = await client.PostAsync(
+                "https://www.google.com/recaptcha/api/siteverify",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    ["secret"]   = secretKey,
+                    ["response"] = token
+                }));
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            return doc.RootElement.GetProperty("success").GetBoolean();
+        }
+        catch
+        {
+            // If Google's servers are unreachable, allow registration to proceed
+            return true;
+        }
     }
     [Authorize (Roles = "Admin")]
     public IActionResult Index()
