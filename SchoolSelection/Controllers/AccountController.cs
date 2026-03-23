@@ -44,7 +44,10 @@ public class AccountController : Controller
     private async Task<bool> VerifyRecaptchaAsync(string token)
     {
         var secretKey = _configuration["RecaptchaSettings:SecretKey"];
-        if (string.IsNullOrWhiteSpace(secretKey) || string.IsNullOrWhiteSpace(token)) return false;
+        // If no secret key configured, skip verification
+        if (string.IsNullOrWhiteSpace(secretKey)) return true;
+        // If widget didn't generate a token (ad-blocker, JS issue), allow through
+        if (string.IsNullOrWhiteSpace(token)) return true;
         try
         {
             var client = _httpClientFactory.CreateClient();

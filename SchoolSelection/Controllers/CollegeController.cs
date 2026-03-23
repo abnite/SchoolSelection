@@ -256,22 +256,7 @@ public class CollegeController : Controller
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var plan = await _subscriptionService.GetUserSubscriptionPlan(userId);
-
-            var resultsCount = 0;
-            if (plan.Type == "Free")
-            {
-                resultsCount = _context.Schools.Count(s => s.AddedBy.Id == userId && s.IsDeleted == false);
-            }
-            else
-            {
-                var getUserSubscription = await _subscriptionService.GetActiveSubscription(userId);
-                if (getUserSubscription != null)
-                {
-                    resultsCount = getUserSubscription.UsedColleges;
-                }
-
-            }
-
+            var resultsCount = await _context.Schools.CountAsync(s => s.AddedBy.Id == userId && !s.IsDeleted);
             ViewData["RemainingColleges"] = plan.MaxColleges - resultsCount;
             ViewData["PlanType"] = plan.Type;
 
@@ -474,21 +459,7 @@ public class CollegeController : Controller
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var plan = await _subscriptionService.GetUserSubscriptionPlan(userId);
-
-            var resultsCount = 0;
-            if (plan.Type == "Free")
-            {
-                resultsCount = _context.Criteria.Count(s => s.AddedBy.Id == userId && s.IsDeleted == false);
-            }
-            else
-            {
-                var getUserSubscription = await _subscriptionService.GetActiveSubscription(userId);
-                if (getUserSubscription != null)
-                {
-                    resultsCount = getUserSubscription.UsedColleges;
-                }
-            }
-
+            var resultsCount = await _context.Criteria.CountAsync(s => s.AddedBy.Id == userId && !s.IsDeleted);
             ViewData["RemainingCriteria"] = plan.MaxCriteria - resultsCount;
             ViewData["PlanType"] = plan.Type;
             // Fetch related schools or initialize a new list if none exist.

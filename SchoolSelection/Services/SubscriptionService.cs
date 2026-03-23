@@ -68,43 +68,18 @@ public class SubscriptionService
 
     public async Task<bool> CanAddSchool(string userId)
     {
-        if (await HasFullAccess(userId)) return true;
-        
+        if (await IsAdmin(userId)) return true;
         var plan = await GetUserSubscriptionPlan(userId);
-
-        var schoolCount = 0;
-        if (plan.Type == "Free")
-        { 
-            schoolCount = _context.Schools.Count(s => s.AddedBy.Id == userId && s.IsDeleted==false);
-        }
-        else
-        {
-          var getUserSubscription = await GetActiveSubscription(userId);
-          schoolCount = getUserSubscription.UsedColleges;
-        }
-
-        
+        var schoolCount = await _context.Schools.CountAsync(s => s.AddedBy.Id == userId && !s.IsDeleted);
         return schoolCount < plan.MaxColleges;
     }
 
     public async Task<bool> CanAddCriteria(string userId)
     {
-        if (await HasFullAccess(userId)) return true;
-        
+        if (await IsAdmin(userId)) return true;
         var plan = await GetUserSubscriptionPlan(userId);
-
-        var criteriaCount = 0;
-        if (plan.Type == "Free")
-        { 
-            criteriaCount = _context.Criteria.Count(s => s.AddedBy.Id == userId && s.IsDeleted==false);
-        }
-        else
-        {
-            var getUserSubscription = await GetActiveSubscription(userId);
-            criteriaCount = getUserSubscription.UsedCriteria;
-        }
-       // return criteriaCount < 2;
-       return criteriaCount < plan.MaxCriteria;
+        var criteriaCount = await _context.Criteria.CountAsync(s => s.AddedBy.Id == userId && !s.IsDeleted);
+        return criteriaCount < plan.MaxCriteria;
     }
 
     public async Task<bool>  CanGenerateResult(string userId)
